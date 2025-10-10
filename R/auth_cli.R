@@ -76,3 +76,6 @@ get_scope_resource <- function(x) {
   res <- sub("/$", "", res)
   return(res)
 }
+
+# Helper function for null coalescing
+`%||%` <- function(x, y) if (is.null(x)) y else x
