@@ -32,7 +32,7 @@ AzureCLICredential <- R6::R6Class(
     #' @return A list containing the access token and expiration time
     get_token = function(scopes = azure_default_scope("arm")) {
       .az_cli_run(
-        scope = scope,
+        scope = scopes,
         tenant_id = self$tenant_id,
         timeout = self$.process_timeout
       )
