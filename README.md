@@ -1,2 +1,2 @@
-# azr
+# azr package
 azr
