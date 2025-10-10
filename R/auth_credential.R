@@ -12,10 +12,10 @@ azure_default_credentials <- function(scope = azure_default_scope(),
   stopifnot(is_defined(scope), is_defined(client_id))
 
   switch(auth_type,
-         client_credentials = make_oauth_client_credentials(scope, client_id, client_secret),
-         azure_cli = make_oauth_azure_cli(resource = get_scope_resource(scope)),
-         auth_code = make_oauth_auth_code(scope = scope, client_id = client_id, cache_disk = cache_disk),
-         device_code = make_oauth_device_code(scope = scope, client_id = client_id, cache_disk = cache_disk)
+    client_credentials = make_oauth_client_credentials(scope, client_id, client_secret),
+    azure_cli = make_oauth_azure_cli(resource = get_scope_resource(scope)),
+    auth_code = make_oauth_auth_code(scope = scope, client_id = client_id, cache_disk = cache_disk),
+    device_code = make_oauth_device_code(scope = scope, client_id = client_id, cache_disk = cache_disk)
   )
 }
 
@@ -194,7 +194,6 @@ azure_default_tenant <- function() {
 
 azure_default_url <- function(what = c("authorize", "token", "device"),
                               tenant_id = azure_default_tenant()) {
-
   what <- match.arg(what, several.ok = TRUE)
   what <- paste0(what, "_url")
 
@@ -214,4 +213,3 @@ azure_default_url <- function(what = c("authorize", "token", "device"),
 is_defined <- function(x) {
   length(x) > 1L || (length(x) && !is.na(x) && nzchar(x))
 }
-

@@ -1,4 +1,3 @@
-
 #' Azure CLI Credential
 #'
 #' @description
@@ -9,9 +8,8 @@
 #' via `az login`. It retrieves access tokens by executing Azure CLI commands.
 #'
 #' @export
-AzureCliCredential <- R6::R6Class(
-  classname = "AzureCliCredential",
-
+AzureCLICredential <- R6::R6Class(
+  classname = "AzureCLICredential",
   public = list(
     #' @field tenant_id tenant ID to use for authentication
     tenant_id = NULL,
@@ -24,7 +22,6 @@ AzureCliCredential <- R6::R6Class(
     #' @param process_timeout Timeout in seconds for CLI process (default: 10)
     initialize = function(tenant_id = NULL,
                           process_timeout = 10) {
-
       self$tenant_id <- tenant_id
       self$.process_timeout <- process_timeout
     },
@@ -34,39 +31,44 @@ AzureCliCredential <- R6::R6Class(
     #' @param scopes  Sgingle scope to request (default: Azure Resource Manager)
     #' @return A list containing the access token and expiration time
     get_token = function(scopes = azure_default_scope("arm")) {
-
-      .az_cli_run(scope = scope, tenant_id = self$tenant_id, timeout = self$.process_timeout)
+      .az_cli_run(
+        scope = scope,
+        tenant_id = self$tenant_id,
+        timeout = self$.process_timeout
+      )
     }
   )
 )
 
 
-.az_cli_run <-  function(scope, tenant_id = NULL, timeout = 10){
-
+.az_cli_run <- function(scope, tenant_id = NULL, timeout = 10) {
   args <- c("account", "get-access-token", "--output", "json")
   az_path <- Sys.which("az")
 
-  if(!nzchar(az_path))
+  if (!nzchar(az_path)) {
     rlang::abort("Azure CLI not found on path")
+  }
 
   validate_scope(scope)
   resource <- .scope_to_resource(scope)
 
   args <- append(args, c("--resource", resource, "--scope", scope))
 
-  if(is.null(tenant_id)){
+  if (is.null(tenant_id)) {
     validate_tenant_id(tenant_id)
     args <- append(args, c("--tenant", tenant_id))
   }
 
-  env <- c(AZURE_CORE_NO_COLOR="true")
+  env <- c(AZURE_CORE_NO_COLOR = "true")
 
-  output <- system2(command = az_path,
-                    args = args,
-                    stdout = TRUE,
-                    stderr = TRUE,
-                    timeout = timeout,
-                    env = env)
+  output <- system2(
+    command = az_path,
+    args = args,
+    stdout = TRUE,
+    stderr = TRUE,
+    timeout = timeout,
+    env = env
+  )
 
   attr_output <- attributes(output)
 
@@ -84,10 +86,10 @@ AzureCliCredential <- R6::R6Class(
 }
 
 
-.scope_to_resource <- function(x){
-
-  if(!rlang::is_bare_string(x))
+.scope_to_resource <- function(x) {
+  if (!rlang::is_bare_string(x)) {
     rlang::abort("This credential requires exactly one scope per token request.")
+  }
 
   u <- httr2::url_parse(x)
   u$path <- NULL

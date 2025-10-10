@@ -44,8 +44,8 @@ azure_get_cli_token <- function(resource) {
 
 azure_cli_get_user <- function() {
   res <- suppressWarnings(system2("az", c("account", "show"),
-                                  stdout = TRUE,
-                                  stderr = TRUE
+    stdout = TRUE,
+    stderr = TRUE
   ))
 
   attr_output <- attributes(res)
