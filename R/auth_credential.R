@@ -172,43 +172,12 @@ azure_default_oauth_client <- function(client_id = NULL,
   )
 }
 
-azure_default_client_id <- function() {
-  # Azure CLI
-  "04b07795-8ddb-461a-bbee-02f9e1bf7b46"
-}
 
-azure_default_scope <- function(resource = c("arm", "graph"), scope = "offline_access") {
-  resource <- match.arg(resource)
 
-  ls_resource <- list(
-    arm = "https://management.azure.com/.default",
-    graph = "https://graph.microsoft.com/.default"
-  )
 
-  unique(c(ls_resource[[resource]], scope))
-}
 
-azure_default_tenant <- function() {
-  "common"
-}
 
-azure_default_url <- function(what = c("authorize", "token", "device"),
-                              tenant_id = azure_default_tenant()) {
-  what <- match.arg(what, several.ok = TRUE)
-  what <- paste0(what, "_url")
 
-  authorize_url <- sprintf("https://login.microsoftonline.com/%s/oauth2/v2.0/authorize", tenant_id)
-  token_url <- sprintf("https://login.microsoftonline.com/%s/oauth2/v2.0/token", tenant_id)
-  device_url <- sprintf("https://login.microsoftonline.com/%s/oauth2/v2.0/devicecode", tenant_id)
-
-  res <- list(authorize_url = authorize_url, token_url = token_url, device_url = device_url)
-
-  if (length(what) == 1L) {
-    res[[what]]
-  } else {
-    res
-  }
-}
 
 is_defined <- function(x) {
   length(x) > 1L || (length(x) && !is.na(x) && nzchar(x))

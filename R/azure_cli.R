@@ -28,20 +28,23 @@ AzureCLICredential <- R6::R6Class(
 
     #' @description
     #' Get an access token using Azure CLI
-    #' @param scopes  Sgingle scope to request (default: Azure Resource Manager)
+    #' @param scope Single scope to request (default: Azure Resource Manager)
     #' @return A list containing the access token and expiration time
-    get_token = function(scopes = azure_default_scope("arm")) {
-      .az_cli_run(
-        scope = scopes,
+    get_token = function(scope = default_azure_scope()) {
+      rlang::try_fetch(.az_cli_run(
+        scope = scope,
         tenant_id = self$tenant_id,
         timeout = self$.process_timeout
-      )
+      ), error = function(cnd)rlang::abort(cnd$message, call = call("get_token")))
     }
   )
 )
 
 
-.az_cli_run <- function(scope, tenant_id = NULL, timeout = 10) {
+.az_cli_run <- function(scope, tenant_id = NULL, timeout = 10L) {
+
+  .call = rlang::current_call()
+
   args <- c("account", "get-access-token", "--output", "json")
   az_path <- Sys.which("az")
 
@@ -54,27 +57,22 @@ AzureCLICredential <- R6::R6Class(
 
   args <- append(args, c("--resource", resource, "--scope", scope))
 
-  if (is.null(tenant_id)) {
+  if (!is.null(tenant_id)) {
     validate_tenant_id(tenant_id)
     args <- append(args, c("--tenant", tenant_id))
   }
 
-  env <- c(AZURE_CORE_NO_COLOR = "true")
-
-  output <- system2(
+  output <- suppressWarnings(system2(
     command = az_path,
     args = args,
     stdout = TRUE,
     stderr = TRUE,
-    timeout = timeout,
-    env = env
-  )
-
+    timeout = timeout
+  ))
   attr_output <- attributes(output)
 
-  if (!is.null(attr_output) && attr_output$status == 1L) {
-    cli::cli_abort("azure cli returned error:\n {output}")
-  }
+  if (!is.null(attr_output) && attr_output$status == 1L)
+    cli::cli_abort(output)
 
   token <- jsonlite::fromJSON(output)
 
@@ -90,9 +88,7 @@ AzureCLICredential <- R6::R6Class(
   if (!rlang::is_bare_string(x)) {
     rlang::abort("This credential requires exactly one scope per token request.")
   }
-
   u <- httr2::url_parse(x)
   u$path <- NULL
-
   sub("/$", "", httr2::url_build(u))
 }
