@@ -1,10 +1,21 @@
 
-
+#' Azure CLI Credential
+#'
+#' @description
+#' Authenticates using the Azure CLI to obtain access tokens.
+#'
+#' @details
+#' This credential requires Azure CLI to be installed and the user to be logged in
+#' via `az login`. It retrieves access tokens by executing Azure CLI commands.
+#'
+#' @export
 AzureCliCredential <- R6::R6Class(
   classname = "AzureCliCredential",
 
   public = list(
+    #' @field tenant_id tenant ID to use for authentication
     tenant_id = NULL,
+    #' @field .process_timeout Timeout in seconds for CLI process (default: 10)
     .process_timeout = 10,
 
     #' @description
@@ -15,7 +26,7 @@ AzureCliCredential <- R6::R6Class(
                           process_timeout = 10) {
 
       self$tenant_id <- tenant_id
-      seld$.process_timeout <- process_timeout
+      self$.process_timeout <- process_timeout
     },
 
     #' @description
