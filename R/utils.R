@@ -24,3 +24,20 @@ validate_scope <- function(x) {
   }
   TRUE
 }
+
+
+get_scope_resource <- function(scope) {
+  x <- grep("^http", scope, value = TRUE, ignore.case = TRUE)
+
+  if(length(x) != 1L)
+    cli::cli_abort("invalid scope {.val {scope}}")
+
+  u <- httr2::url_parse(x)
+  u$path <- NULL
+  u$query <- NULL
+  u$fragment <- NULL
+
+  res <- httr2::url_build(u)
+  res <- sub("/$", "", res)
+  return(res)
+}

@@ -10,40 +10,51 @@
 #' @export
 AzureCLICredential <- R6::R6Class(
   classname = "AzureCLICredential",
+  inherit = Credential,
   public = list(
-    #' @field tenant_id tenant ID to use for authentication
-    tenant_id = NULL,
-    #' @field .process_timeout Timeout in seconds for CLI process (default: 10)
     .process_timeout = 10,
-
     #' @description
     #' Initialize the AzureCliCredential
+    #' @param scope Single scope to request (default: Azure Resource Manager)
     #' @param tenant_id Optional tenant ID to use for authentication
     #' @param process_timeout Timeout in seconds for CLI process (default: 10)
-    initialize = function(tenant_id = NULL,
+    initialize = function(scope = NULL,
+                          tenant_id = NULL,
                           process_timeout = 10) {
-      self$tenant_id <- tenant_id
+
+      if(!rlang::is_bare_string(scope))
+        cli::cli_abort("Argument {.arg scope} must be a single string, not a vector of length {length(scope)}.")
+
+      super$initialize(scope = scope, tenant_id = tenant_id)
       self$.process_timeout <- process_timeout
     },
 
     #' @description
     #' Get an access token using Azure CLI
-    #' @param scope Single scope to request (default: Azure Resource Manager)
+    #' @param scope Optional (single) scope to request (uses initialized scope if not provided)
     #' @return A list containing the access token and expiration time
-    get_token = function(scope = default_azure_scope()) {
+    get_token = function(scope = NULL) {
       rlang::try_fetch(.az_cli_run(
-        scope = scope,
-        tenant_id = self$tenant_id,
+        scope = scope %||% self$.scope,
+        tenant_id = self$.tenant_id,
         timeout = self$.process_timeout
       ), error = function(cnd)rlang::abort(cnd$message, call = call("get_token")))
+    }
+    ,
+    #' @description
+    #' Add authentication to an httr2 request
+    #' @param req An httr2 request object
+    #' @param scope Optional (single) scope to request (uses initialized scope if not provided)
+    #' @return An httr2 request object with bearer token authentication added
+    req_auth = function(req, scope = NULL){
+      token <- self$get_token(scope)
+      httr2::req_auth_bearer_token(req, token$access_token)
     }
   )
 )
 
 
 .az_cli_run <- function(scope, tenant_id = NULL, timeout = 10L) {
-
-  .call = rlang::current_call()
 
   args <- c("account", "get-access-token", "--output", "json")
   az_path <- Sys.which("az")
@@ -53,9 +64,7 @@ AzureCLICredential <- R6::R6Class(
   }
 
   validate_scope(scope)
-  resource <- .scope_to_resource(scope)
-
-  args <- append(args, c("--resource", resource, "--scope", scope))
+  args <- append(args, c("--scope", scope))
 
   if (!is.null(tenant_id)) {
     validate_tenant_id(tenant_id)
@@ -81,14 +90,4 @@ AzureCLICredential <- R6::R6Class(
     token_type = token$tokenType,
     expires_in = token$expires_on
   )
-}
-
-
-.scope_to_resource <- function(x) {
-  if (!rlang::is_bare_string(x)) {
-    rlang::abort("This credential requires exactly one scope per token request.")
-  }
-  u <- httr2::url_parse(x)
-  u$path <- NULL
-  sub("/$", "", httr2::url_build(u))
 }

@@ -154,23 +154,7 @@ make_oauth_azure_cli <- function(resource) {
   return(fun)
 }
 
-azure_default_oauth_client <- function(client_id = NULL,
-                                       client_secret = NULL,
-                                       name = NULL) {
-  client_id <- client_id %||% azure_default_client_id()
 
-  if (is.null(name)) {
-    name <- rlang::hash(client_id)
-  }
-
-  client <- httr2::oauth_client(
-    name = name,
-    id = client_id %||% azure_default_client_id(),
-    token_url = azure_default_url("token"),
-    secret = client_secret,
-    auth = "body"
-  )
-}
 
 
 

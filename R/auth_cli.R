@@ -62,20 +62,4 @@ azure_cli_available <- function() {
   (!is.na(x) && nzchar(x, keepNA = TRUE))
 }
 
-get_scope_resource <- function(x) {
-  x <- grep("^http", x, value = TRUE)
 
-  stopifnot(length(x) == 1L)
-
-  u <- httr2::url_parse(x)
-  u$path <- NULL
-  u$query <- NULL
-  u$fragment <- NULL
-
-  res <- httr2::url_build(u)
-  res <- sub("/$", "", res)
-  return(res)
-}
-
-# Helper function for null coalescing
-`%||%` <- function(x, y) if (is.null(x)) y else x
