@@ -21,9 +21,9 @@ AzureCLICredential <- R6::R6Class(
     initialize = function(scope = NULL,
                           tenant_id = NULL,
                           process_timeout = 10) {
-
-      if(!rlang::is_bare_string(scope))
-        cli::cli_abort("Argument {.arg scope} must be a single string, not a vector of length {length(scope)}.")
+    # TODO remove from here
+    #if(!rlang::is_bare_string(scope))
+     #   cli::cli_abort("Argument {.arg scope} must be a single string, not a vector of length {length(scope)}.")
 
       super$initialize(scope = scope, tenant_id = tenant_id)
       self$.process_timeout <- process_timeout

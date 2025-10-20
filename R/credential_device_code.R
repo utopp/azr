@@ -25,15 +25,15 @@ DeviceCodeCredential <- R6::R6Class(
                           cache_disk = TRUE,
                           auth_host = "AZURE_PUBLIC_CLOUD") {
 
-      auth_url <- default_azure_url("device", auth_host = auth_host, tenant_id = tenant_id)
-
       super$initialize(scope = scope,
                        tenant_id = tenant_id,
                        client_id = client_id,
                        cache_disk = cache_disk,
-                       auth_host =  auth_host,
-                       auth_url = auth_url)
+                       auth_host =  auth_host)
 
+      self$.auth_url <- default_azure_url("device",
+                                          auth_host = self$.auth_host,
+                                          tenant_id = self$.tenant_id)
     },
 
     #' @description
@@ -41,11 +41,11 @@ DeviceCodeCredential <- R6::R6Class(
     #' @param scopes Character vector of scopes to request (optional, uses initialized scope if not provided)
     #' @return A list containing the access token and expiration time
     get_token = function(scope = NULL, reauth = FALSE) {
-      httr2::oauth_token_cached(client = private$.auth_client,
+      httr2::oauth_token_cached(client = self$.auth_client,
                                 flow = httr2::oauth_flow_device,
                                 cache_disk = self$.cache_disk,
                                 cache_key = self$.cache_key,
-                                flow_params = list(scope = paste(self$scope, collapse = " "),
+                                flow_params = list(scope = paste(self$.scope, collapse = " "),
                                                    auth_url = self$.auth_url,
                                                    client = self$.auth_client),
                                 reauth = reauth)

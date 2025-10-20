@@ -45,8 +45,9 @@ Credential <- R6::R6Class(
       self$.cache_key <- c(self$.client_id, self$.tenant_id, self$.scope)
       self$.id <- rlang::hash(self$.cache_key)
 
+      self$.auth_host <- auth_host
       self$.token_url <- default_azure_url(what = "token",
-                                           auth_host = auth_host,
+                                           auth_host = self$.auth_host,
                                            tenant_id = self$.tenant_id)
       self$.auth_url <- auth_url
 
