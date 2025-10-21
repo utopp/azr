@@ -30,7 +30,7 @@ get_scope_resource <- function(scope) {
   x <- grep("^http", scope, value = TRUE, ignore.case = TRUE)
 
   if(length(x) != 1L)
-    cli::cli_abort("invalid scope {.val {scope}}")
+    return(NULL)
 
   u <- httr2::url_parse(x)
   u$path <- NULL
