@@ -13,7 +13,7 @@ validate_tenant_id <- function(x) {
 
 
 validate_scope <- function(x) {
-  if (!rlang::is_string(x)) {
+  if (!rlang::is_character(x)) {
     cli::cli_abort("input must be a character vector")
   }
 

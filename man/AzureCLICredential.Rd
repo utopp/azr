@@ -11,7 +11,7 @@ This credential requires Azure CLI to be installed and the user to be logged in
 via \verb{az login}. It retrieves access tokens by executing Azure CLI commands.
 }
 \section{Super class}{
-\code{azr::Credential} -> \code{AzureCLICredential}
+\code{\link[azr:Credential]{azr::Credential}} -> \code{AzureCLICredential}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -22,6 +22,14 @@ via \verb{az login}. It retrieves access tokens by executing Azure CLI commands.
 \item \href{#method-AzureCLICredential-clone}{\code{AzureCLICredential$clone()}}
 }
 }
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="azr" data-topic="Credential" data-id="print"><a href='../../azr/html/Credential.html#method-Credential-print'><code>azr::Credential$print()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="azr" data-topic="Credential" data-id="validate"><a href='../../azr/html/Credential.html#method-Credential-validate'><code>azr::Credential$validate()</code></a></span></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AzureCLICredential-new"></a>}}
 \if{latex}{\out{\hypertarget{method-AzureCLICredential-new}{}}}

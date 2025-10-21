@@ -10,6 +10,8 @@ Base Credential class.
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-Credential-new}{\code{Credential$new()}}
+\item \href{#method-Credential-validate}{\code{Credential$validate()}}
+\item \href{#method-Credential-print}{\code{Credential$print()}}
 \item \href{#method-Credential-clone}{\code{Credential$clone()}}
 }
 }
@@ -24,9 +26,10 @@ Initialize the Credential
   tenant_id = NULL,
   client_id = NULL,
   client_secret = NULL,
-  cache_disk = TRUE,
-  auth_host = "AZURE_PUBLIC_CLOUD",
-  auth_url = NULL
+  use_cache = c("disk", "memory"),
+  offline = FALSE,
+  oauth_host = NULL,
+  oauth_endpoint = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -44,6 +47,24 @@ Initialize the Credential
 \subsection{Returns}{
 A new \code{Credential} object
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Credential-validate"></a>}}
+\if{latex}{\out{\hypertarget{method-Credential-validate}{}}}
+\subsection{Method \code{validate()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Credential$validate()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Credential-print"></a>}}
+\if{latex}{\out{\hypertarget{method-Credential-print}{}}}
+\subsection{Method \code{print()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Credential$print()}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Credential-clone"></a>}}
