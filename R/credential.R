@@ -39,7 +39,7 @@ Credential <- R6::R6Class(
       self$.scope <- scope %||% default_azure_scope(resource = "AZURE_ARM")
 
       if(isTRUE(offline))
-        self$.scope <-  unique(c(self$.scope, "offline"))
+        self$.scope <-  unique(c(self$.scope, "offline_access"))
 
       self$.str_scope <- collapse_scope(self$.scope)
 

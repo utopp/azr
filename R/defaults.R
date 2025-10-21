@@ -38,7 +38,7 @@ default_azure_url <- function(endpoint = NULL,
 
   validate_tenant_id(tenant_id)
 
-  oauth_base <- glue::glue_safe("https://{oauth_host_url}/{tenant_id}/oauth2/v2.0")
+  oauth_base <- rlang::englue("https://{oauth_host_url}/{tenant_id}/oauth2/v2.0")
 
   ls_urls <- list(authorize = "authorize", token = "token", devicecode = "devicecode")
   ls_urls <- lapply(ls_urls, function(x)paste(oauth_base, x, sep = "/"))
