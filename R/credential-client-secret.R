@@ -18,7 +18,7 @@ ClientSecretCredential <- R6::R6Class(
     ,
     get_token = function() {
       httr2::oauth_flow_client_credentials(client = self$.oauth_client,
-                                           scope = self$.str_scope)
+                                           scope = self$.scope_str)
     }
     ,
     req_auth = function(req){

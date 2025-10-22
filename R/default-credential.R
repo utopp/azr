@@ -82,7 +82,7 @@ default_token_provider <- function(scope =  NULL,
 #'   authorizer <- default_request_authorizer(
 #'     scope = "https://graph.microsoft.com/.default"
 #'   )
-#'   req <- authorizer(httr2::request(https://graph.microsoft.com/me))
+#'   req <- authorizer(httr2::request(https://graph.microsoft.com/v1.0/me))
 #' }
 #'
 #' @export
