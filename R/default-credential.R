@@ -166,7 +166,7 @@ find_credential <- function(scope =  NULL,
   for(cls in chain){
 
     if(isTRUE(cls$is_interactive) && !rlang::is_interactive()){
-      cli::cli_alert_warning("Non-iteractive Session. Skipping {.cls {cls$classname}}")
+      cli::cli_alert_warning("Skipping {.cls {cls$classname}} (non-interactive session)")
       next
     } else {
       cli::cli_alert_info("Trying: {.cls {cls$classname}}")
@@ -183,7 +183,7 @@ find_credential <- function(scope =  NULL,
                           if(isTRUE(verbose))
                             print(e)
                           else
-                            cli::cli_alert_danger("Unsucessful!")
+                            cli::cli_alert_danger("Unsuccessful!")
                         }
                         ,
                         interrupt = function(e) {
@@ -196,7 +196,7 @@ find_credential <- function(scope =  NULL,
       }
     }
   }
-  cli::cli_abort("All Credentials in chain Failed!")
+  cli::cli_abort("All authentication methods of the chain failed!")
 }
 
 
