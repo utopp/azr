@@ -1,14 +1,4 @@
-#' Azure Authorization Code Credential
-#'
-#' @description
-#' Authenticates using the authorization code flow to obtain access tokens.
-#'
-#' @details
-#' This credential authenticates a user through the authorization code flow. The user must
-#' navigate to a URL and enter a provided code to complete authentication.
-#' Supports token caching to disk for persistence across sessions.
-#'
-#' @export
+
 InteractiveCredential <- R6::R6Class(
   classname = "InteractiveCredential",
   inherit = Credential,
@@ -22,8 +12,7 @@ InteractiveCredential <- R6::R6Class(
                           tenant_id = NULL,
                           client_id =  NULL,
                           use_cache = "disk",
-                          offline = TRUE,
-                          oauth_host = NULL
+                          offline = TRUE
     ) {
 
       oauth_endpoint <- check_capability()
@@ -41,7 +30,6 @@ InteractiveCredential <- R6::R6Class(
                       client_id = client_id,
                       use_cache = use_cache,
                       offline = offline,
-                      oauth_host = oauth_host,
                       oauth_endpoint = oauth_endpoint)
     }
     ,
@@ -80,6 +68,7 @@ InteractiveCredential <- R6::R6Class(
   )
 )
 
+InteractiveCredential$is_interactive <- TRUE
 
 check_capability <- function(){
   if(!is_host_session()){

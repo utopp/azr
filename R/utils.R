@@ -41,3 +41,52 @@ get_scope_resource <- function(scope) {
   res <- sub("/$", "", res)
   return(res)
 }
+
+
+r6_get_initialize_arguments <- function(cls){
+
+  if(!R6::is.R6Class(cls))
+    cli::cli_abort("Argument {.arg cls} must the a R6 Class.")
+
+  if(is.null(cls$public_methods$initialize))
+    return(r6_get_initialize_arguments(cls$get_inherit()))
+
+  names(formals(cls$public_methods$initialize))
+}
+
+
+r6_get_public_fields <- function(cls){
+
+  if(!R6::is.R6Class(cls))
+    cli::cli_abort("Argument {.arg cls} must the a R6 class.")
+
+  res <- names(cls$public_fields)
+  sup <- cls$get_inherit()
+
+  if(!is.null(sup))
+    return(c(res, r6_get_public_fields(sup)))
+
+  res
+}
+
+
+r6_get_class <- function(obj){
+
+  if(!R6::is.R6(obj))
+    cli::cli_abort("Argument {.arg obj} must the a R6 object.")
+
+  get(class(obj)[[1]], envir = getNamespace(methods::getPackageName()))
+}
+
+
+`%|||%` <- function(x,y){
+  if (is_empty(x))
+    y
+  else x
+}
+
+is_empty <- function(x){
+  is.null(x) || (rlang::is_scalar_vector(x) && (rlang::is_empty(x) || is.na(x) || !nzchar(x)))
+}
+
+

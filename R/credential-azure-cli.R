@@ -1,38 +1,20 @@
-#' Azure CLI Credential
-#'
-#' @description
-#' Authenticates using the Azure CLI to obtain access tokens.
-#'
-#' @details
-#' This credential requires Azure CLI to be installed and the user to be logged in
-#' via `az login`. It retrieves access tokens by executing Azure CLI commands.
-#'
-#' @export
+
 AzureCLICredential <- R6::R6Class(
   classname = "AzureCLICredential",
   inherit = Credential,
   public = list(
     .process_timeout = 10,
-    #' @description
-    #' Initialize the AzureCliCredential
-    #' @param scope Single scope to request (default: Azure Resource Manager)
-    #' @param tenant_id Optional tenant ID to use for authentication
-    #' @param process_timeout Timeout in seconds for CLI process (default: 10)
     initialize = function(scope = NULL,
                           tenant_id = NULL,
-                          process_timeout = 10) {
+                          process_timeout = NULL) {
     # TODO remove from here
     #if(!rlang::is_bare_string(scope))
      #   cli::cli_abort("Argument {.arg scope} must be a single string, not a vector of length {length(scope)}.")
 
       super$initialize(scope = scope, tenant_id = tenant_id)
-      self$.process_timeout <- process_timeout
-    },
-
-    #' @description
-    #' Get an access token using Azure CLI
-    #' @param scope Optional (single) scope to request (uses initialized scope if not provided)
-    #' @return A list containing the access token and expiration time
+      self$.process_timeout <- process_timeout %||% self$.process_timeout
+    }
+    ,
     get_token = function(scope = NULL) {
       rlang::try_fetch(.az_cli_run(
         scope = scope %||% self$.scope,
@@ -41,11 +23,6 @@ AzureCLICredential <- R6::R6Class(
       ), error = function(cnd)rlang::abort(cnd$message, call = call("get_token")))
     }
     ,
-    #' @description
-    #' Add authentication to an httr2 request
-    #' @param req An httr2 request object
-    #' @param scope Optional (single) scope to request (uses initialized scope if not provided)
-    #' @return An httr2 request object with bearer token authentication added
     req_auth = function(req, scope = NULL){
       token <- self$get_token(scope)
       httr2::req_auth_bearer_token(req, token$access_token)
