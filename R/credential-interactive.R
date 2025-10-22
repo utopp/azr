@@ -33,10 +33,6 @@ InteractiveCredential <- R6::R6Class(
                       oauth_endpoint = oauth_endpoint)
     }
     ,
-    #' @description
-    #' Get an access token using device code flow
-    #' @param scope Character vector of scopes to request (optional, uses initialized scope if not provided)
-    #' @return A list containing the access token and expiration time
     get_token = function(reauth = FALSE) {
 
       httr2::oauth_token_cached(client = self$.oauth_client,
@@ -49,11 +45,6 @@ InteractiveCredential <- R6::R6Class(
 
     }
     ,
-    #' @description
-    #' Add authentication to an httr2 request
-    #' @param req An httr2 request object
-    #' @param scopes Optional scope(s) to request (uses initialized scope if not provided)
-    #' @return An httr2 request object with bearer token authentication added
     req_auth = function(req){
 
       private$req_auth_fun(

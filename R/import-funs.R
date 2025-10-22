@@ -43,6 +43,7 @@ redacted <- function(){
   structure(list(NULL), class = "redacted")
 }
 
+#' @exportS3Method format redacted
 format.redacted <- function (x, ...)
 {
   cli::col_grey("<REDACTED>")
