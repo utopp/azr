@@ -39,7 +39,7 @@ InteractiveCredential <- R6::R6Class(
                                 flow = private$flow,
                                 cache_disk = self$.use_cache == "disk",
                                 cache_key = self$.cache_key,
-                                flow_params = list(scope = self$.str_scope,
+                                flow_params = list(scope = self$.scope_str,
                                                    auth_url = self$.oauth_url),
                                 reauth = reauth)
 
@@ -51,7 +51,7 @@ InteractiveCredential <- R6::R6Class(
         req = req,
         client = self$.oauth_client,
         auth_url = self$.oauth_url,
-        scope = self$.str_scope,
+        scope = self$.scope_str,
         cache_disk = self$.use_cache == "disk",
         cache_key = self$.cache_key
       )
