@@ -4,10 +4,6 @@
 <url><loc>/LICENSE.html</loc></url>
 <url><loc>/authors.html</loc></url>
 <url><loc>/index.html</loc></url>
-<url><loc>/reference/AzureCLICredential.html</loc></url>
-<url><loc>/reference/ClientSecretCredential.html</loc></url>
-<url><loc>/reference/Credential.html</loc></url>
-<url><loc>/reference/InteractiveCredential.html</loc></url>
 <url><loc>/reference/azr-package.html</loc></url>
 <url><loc>/reference/index.html</loc></url>
 </urlset>
