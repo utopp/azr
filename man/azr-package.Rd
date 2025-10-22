@@ -4,9 +4,9 @@
 \name{azr-package}
 \alias{azr}
 \alias{azr-package}
-\title{azr: What the Package Does (One Line, Title Case)}
+\title{azr: Credential Chain for Seamless OAuth 2.0 Authentication to Azure Services}
 \description{
-What the package does (one paragraph).
+Implements a credential chain for Azure OAuth 2.0 authentication based on 'httr2''s OAuth framework. Sequentially attempts authentication methods until one succeeds. During development allows interactive browser-based (Device Code and Auth Code Flows) login and non-interactive flows (Client Secret) in batch mode.
 }
 \author{
 \strong{Maintainer}: Pedro Baltazar \email{pedrobtz@gmail.com}

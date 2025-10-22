@@ -60,3 +60,16 @@ default_azure_host <- function(){
   Sys.getenv(EnvironmentVariables$AZURE_AUTHORITY_HOST,
              unset = AzureAuthorityHosts$AZURE_PUBLIC_CLOUD)
 }
+
+
+default_redirect_uri <- function (redirect_uri = httr2::oauth_redirect_uri())
+{
+  parsed <- httr2::url_parse(redirect_uri)
+
+  if (is.null(parsed$port)) {
+    rlang::check_installed("httpuv", "desktop OAuth")
+    parsed$port <- httpuv::randomPort()
+  }
+  httr2::url_build(parsed)
+}
+

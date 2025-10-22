@@ -161,14 +161,15 @@ find_credential <- function(scope =  NULL,
                             offline = FALSE,
                             oauth_host = NULL,
                             oauth_endpoint = NULL,
-                            chain = default_credential_chain()){
+                            chain = default_credential_chain(),
+                            verbose = FALSE){
   for(cls in chain){
 
     if(isTRUE(cls$is_interactive) && !rlang::is_interactive()){
-      cli::cli_alert_warning("Non-iteractive Session. Skipping {.cls {cls$classname}}.")
+      cli::cli_alert_warning("Non-iteractive Session. Skipping {.cls {cls$classname}}")
       next
     } else {
-      cli::cli_alert_info("Trying: {.cls {cls$classname}}.")
+      cli::cli_alert_info("Trying: {.cls {cls$classname}}")
     }
 
     cls_args <- r6_get_initialize_arguments(cls)
@@ -179,25 +180,31 @@ find_credential <- function(scope =  NULL,
     if(inherits(crd, "Credential")){
       token <- tryCatch(crd$get_token(),
                         error = function(e){
-                          cli::cli_alert_danger("Unsucessful")
+                          if(isTRUE(verbose))
+                            print(e)
+                          else
+                            cli::cli_alert_danger("Unsucessful!")
                         }
                         ,
                         interrupt = function(e) {
-                          cli::cli_alert_danger("Interrupted.")
+                          cli::cli_alert_danger("Interrupted!")
                         })
 
       if(inherits(token, "httr2_token")){
-        cli::cli_alert_success("Sucessful")
+        cli::cli_alert_success("Sucessful!")
         return(crd)
       }
     }
   }
-  cli::cli_abort("Failed to find credentials.")
+  cli::cli_abort("All Credentials in chain Failed!")
 }
 
 
 default_credential_chain <- function(){
-  list(ClientSecretCredential, AzureCLICredential, InteractiveCredential)
+  list(ClientSecretCredential,
+       AzureCLICredential,
+       AuthCodeCredential,
+       DeviceCodeCredential)
 }
 
 

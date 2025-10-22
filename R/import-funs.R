@@ -1,5 +1,14 @@
 
 
+is_hosted_session <- function(){
+  if (nzchar(Sys.getenv("COLAB_RELEASE_TAG"))) {
+    return(TRUE)
+  }
+  Sys.getenv("RSTUDIO_PROGRAM_MODE") == "server" &&
+    !grepl("localhost", Sys.getenv("RSTUDIO_HTTP_REFERER"), fixed = TRUE)
+}
+
+
 bullets <- function(x){
   as_simple <- function(x) {
     if (is.atomic(x) && length(x) == 1) {

@@ -15,7 +15,8 @@ Credential <- R6::R6Class(
     .oauth_host = NULL,
     .oauth_endpoint = NULL,
     .oauth_url = NULL,
-    .token_url = NULL
+    .token_url = NULL,
+    .redirect_uri = NULL
     ,
     initialize = function(scope =  NULL,
                           tenant_id = NULL,
@@ -77,10 +78,15 @@ Credential <- R6::R6Class(
       cli::cli_text(cli::style_bold("<", paste(class(self), collapse = "/"), ">"))
       nms <- r6_get_public_fields(cls = r6_get_class(self))
       pfields <- rlang::env_get_list(env = self, nms = nms)
-      names(pfields) <- sub("^.","",names(pfields))
+      names(pfields) <- sub("^\\.","",names(pfields))
       redacted <- list_redact(Filter(length, pfields), c("client_secret", "key"))
       bullets(redacted)
       return(invisible(self))
     }
   )
 )
+
+
+collapse_scope = function(scope){
+  paste(scope, collapse = " ")
+}
