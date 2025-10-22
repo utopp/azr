@@ -5,6 +5,9 @@
 <url><loc>/authors.html</loc></url>
 <url><loc>/index.html</loc></url>
 <url><loc>/reference/azr-package.html</loc></url>
+<url><loc>/reference/default_request_authorizer.html</loc></url>
+<url><loc>/reference/default_token_provider.html</loc></url>
+<url><loc>/reference/get_token.html</loc></url>
 <url><loc>/reference/index.html</loc></url>
 </urlset>
 
