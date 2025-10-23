@@ -26,11 +26,11 @@
 #' @return A function that retrieves and returns an authentication token when
 #'   called.
 #'
-#' @seealso [default_request_authorizer()], [get_token()]
+#' @seealso [get_request_authorizer()], [get_token()]
 #'
 #' @examples
 #' \dontrun{
-#' token_provider <- default_token_provider(
+#' token_provider <- get_token_provider(
 #'   scope = "https://graph.microsoft.com/.default",
 #'   tenant_id = "my-tenant-id",
 #'   client_id = "my-client-id",
@@ -40,14 +40,14 @@
 #' }
 #'
 #' @export
-default_token_provider <- function(scope = NULL,
-                                   tenant_id = NULL,
-                                   client_id = NULL,
-                                   client_secret = NULL,
-                                   use_cache = "disk",
-                                   offline = FALSE,
-                                   .chain = default_credential_chain(),
-                                   .verbose = FALSE) {
+get_token_provider <- function(scope = NULL,
+                               tenant_id = NULL,
+                               client_id = NULL,
+                               client_secret = NULL,
+                               use_cache = "disk",
+                               offline = FALSE,
+                               .chain = default_credential_chain(),
+                               .verbose = FALSE) {
   crd <- find_credential(
     scope = scope,
     tenant_id = tenant_id,
@@ -91,25 +91,25 @@ default_token_provider <- function(scope = NULL,
 #'   when called.
 #'
 #'
-#' @seealso [default_token_provider()], [get_token()]
+#' @seealso [get_token_provider()], [get_token()]
 #'
 #' @examples
 #' \dontrun{
-#' authorizer <- default_request_authorizer(
+#' req_auth <- get_request_authorizer(
 #'   scope = "https://graph.microsoft.com/.default"
 #' )
-#' req <- authorizer(httr2::request("https://graph.microsoft.com/v1.0/me"))
+#' req <- req_auth(httr2::request("https://graph.microsoft.com/v1.0/me"))
 #' }
 #'
 #' @export
-default_request_authorizer <- function(scope = NULL,
-                                       tenant_id = NULL,
-                                       client_id = NULL,
-                                       client_secret = NULL,
-                                       use_cache = "disk",
-                                       offline = FALSE,
-                                       .chain = default_credential_chain(),
-                                       .verbose = FALSE) {
+get_request_authorizer <- function(scope = NULL,
+                                   tenant_id = NULL,
+                                   client_id = NULL,
+                                   client_secret = NULL,
+                                   use_cache = "disk",
+                                   offline = FALSE,
+                                   .chain = default_credential_chain(),
+                                   .verbose = FALSE) {
   crd <- find_credential(
     scope = scope,
     tenant_id = tenant_id,
@@ -149,7 +149,7 @@ default_request_authorizer <- function(scope = NULL,
 #'
 #' @return An [httr2::oauth_token()] object.
 #'
-#' @seealso [default_token_provider()], [default_request_authorizer()]
+#' @seealso [get_token_provider()], [get_request_authorizer()]
 #'
 #' @examples
 #' \dontrun{
@@ -170,7 +170,7 @@ get_token <- function(scope = NULL,
                       offline = FALSE,
                       .chain = default_credential_chain(),
                       .verbose = FALSE) {
-  provider <- default_token_provider(
+  provider <- get_token_provider(
     scope = scope,
     tenant_id = tenant_id,
     client_id = client_id,

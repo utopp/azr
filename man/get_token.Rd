@@ -51,15 +51,15 @@ acquisition in a single step.
 }
 \examples{
 \dontrun{
-  token <- get_token(
-    scope = "https://graph.microsoft.com/.default",
-    tenant_id = "my-tenant-id",
-    client_id = "my-client-id",
-    client_secret = "my-secret"
-  )
+token <- get_token(
+  scope = "https://graph.microsoft.com/.default",
+  tenant_id = "my-tenant-id",
+  client_id = "my-client-id",
+  client_secret = "my-secret"
+)
 }
 
 }
 \seealso{
-\code{\link[=default_token_provider]{default_token_provider()}}, \code{\link[=default_request_authorizer]{default_request_authorizer()}}
+\code{\link[=get_token_provider]{get_token_provider()}}, \code{\link[=get_request_authorizer]{get_request_authorizer()}}
 }
