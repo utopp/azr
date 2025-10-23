@@ -29,7 +29,7 @@ bullets <- function(x) {
 
   vals <- vapply(x, as_simple, character(1))
   names <- format(names(x))
-  names <- gsub(" ", "\u00a0", names, fixed = TRUE)  # non-breaking space
+  names <- gsub(" ", "\u00a0", names, fixed = TRUE) # non-breaking space
 
   for (i in seq_along(x)) {
     cli::cli_li("{.field {names[[i]]}}: {vals[[i]]}")

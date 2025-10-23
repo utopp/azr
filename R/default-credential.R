@@ -30,13 +30,13 @@
 #'
 #' @examples
 #' \dontrun{
-#'   token_provider <- default_token_provider(
-#'     scope = "https://graph.microsoft.com/.default",
-#'     tenant_id = "my-tenant-id",
-#'     client_id = "my-client-id",
-#'     client_secret = "my-secret"
-#'   )
-#'   token <- token_provider()
+#' token_provider <- default_token_provider(
+#'   scope = "https://graph.microsoft.com/.default",
+#'   tenant_id = "my-tenant-id",
+#'   client_id = "my-client-id",
+#'   client_secret = "my-secret"
+#' )
+#' token <- token_provider()
 #' }
 #'
 #' @export
@@ -48,7 +48,6 @@ default_token_provider <- function(scope = NULL,
                                    offline = FALSE,
                                    .chain = default_credential_chain(),
                                    .verbose = FALSE) {
-
   crd <- find_credential(
     scope = scope,
     tenant_id = tenant_id,
@@ -57,7 +56,8 @@ default_token_provider <- function(scope = NULL,
     use_cache = use_cache,
     offline = offline,
     .chain = .chain,
-    .verbose = .verbose)
+    .verbose = .verbose
+  )
 
   crd$get_token
 }
@@ -95,10 +95,10 @@ default_token_provider <- function(scope = NULL,
 #'
 #' @examples
 #' \dontrun{
-#'   authorizer <- default_request_authorizer(
-#'     scope = "https://graph.microsoft.com/.default"
-#'   )
-#'   req <- authorizer(httr2::request("https://graph.microsoft.com/v1.0/me"))
+#' authorizer <- default_request_authorizer(
+#'   scope = "https://graph.microsoft.com/.default"
+#' )
+#' req <- authorizer(httr2::request("https://graph.microsoft.com/v1.0/me"))
 #' }
 #'
 #' @export
@@ -110,7 +110,6 @@ default_request_authorizer <- function(scope = NULL,
                                        offline = FALSE,
                                        .chain = default_credential_chain(),
                                        .verbose = FALSE) {
-
   crd <- find_credential(
     scope = scope,
     tenant_id = tenant_id,
@@ -119,7 +118,8 @@ default_request_authorizer <- function(scope = NULL,
     use_cache = use_cache,
     offline = offline,
     .chain = .chain,
-    .verbose = .verbose)
+    .verbose = .verbose
+  )
   crd$req_auth
 }
 
@@ -153,12 +153,12 @@ default_request_authorizer <- function(scope = NULL,
 #'
 #' @examples
 #' \dontrun{
-#'   token <- get_token(
-#'     scope = "https://graph.microsoft.com/.default",
-#'     tenant_id = "my-tenant-id",
-#'     client_id = "my-client-id",
-#'     client_secret = "my-secret"
-#'   )
+#' token <- get_token(
+#'   scope = "https://graph.microsoft.com/.default",
+#'   tenant_id = "my-tenant-id",
+#'   client_id = "my-client-id",
+#'   client_secret = "my-secret"
+#' )
 #' }
 #'
 #' @export
@@ -170,7 +170,6 @@ get_token <- function(scope = NULL,
                       offline = FALSE,
                       .chain = default_credential_chain(),
                       .verbose = FALSE) {
-
   provider <- default_token_provider(
     scope = scope,
     tenant_id = tenant_id,
@@ -179,7 +178,8 @@ get_token <- function(scope = NULL,
     use_cache = use_cache,
     offline = offline,
     .chain = .chain,
-    .verbose = .verbose)
+    .verbose = .verbose
+  )
   provider()
 }
 
@@ -194,9 +194,7 @@ find_credential <- function(scope = NULL,
                             oauth_endpoint = NULL,
                             .chain = default_credential_chain(),
                             .verbose = FALSE) {
-
   for (crd in .chain) {
-
     if (R6::is.R6Class(crd)) {
       obj <- try(new_instance(crd, env = rlang::current_env()), silent = TRUE)
       cli::cli_alert_info("Trying: {.cls {crd$classname}}")
@@ -215,8 +213,9 @@ find_credential <- function(scope = NULL,
       next
     }
 
-    if(isTRUE(.verbose))
+    if (isTRUE(.verbose)) {
       print(obj)
+    }
 
     token <- tryCatch(
       obj$get_token(),

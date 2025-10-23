@@ -91,20 +91,20 @@ is_empty <- function(x) {
 }
 
 
-is_empty_vec <- function(x){
-  vapply(x,is_empty,logical(1), USE.NAMES = FALSE)
+is_empty_vec <- function(x) {
+  vapply(x, is_empty, logical(1), USE.NAMES = FALSE)
 }
 
 
-get_env_config <- function(){
-
+get_env_config <- function() {
   tenant_id_env <- Sys.getenv("AZURE_TENANT_ID", unset = "")
   client_id_env <- Sys.getenv("AZURE_CLIENT_ID", unset = "")
   client_secret_env <- Sys.getenv("AZURE_CLIENT_SECRET", unset = "")
   authority_host_env <- Sys.getenv("AZURE_AUTHORITY_HOST", unset = "")
 
   # Build bullet items
-  c("*" = if (nzchar(tenant_id_env)) {
+  c(
+    "*" = if (nzchar(tenant_id_env)) {
       cli::format_inline("AZURE_TENANT_ID: {.val {tenant_id_env}}")
     } else {
       cli::format_inline("AZURE_TENANT_ID: {.val {default_azure_tenant_id()}} (default)")

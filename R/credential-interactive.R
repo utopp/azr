@@ -35,8 +35,7 @@
 #' }
 DeviceCodeCredential <- R6::R6Class(
   classname = "DeviceCodeCredential",
-  inherit = InteractiveCredential,
-  ,
+  inherit = InteractiveCredential, ,
   public = list(
     #' @description
     #' Create a new device code credential
@@ -52,21 +51,20 @@ DeviceCodeCredential <- R6::R6Class(
     #'   (refresh tokens). Defaults to `TRUE`.
     #'
     #' @return A new `DeviceCodeCredential` object
-    initialize = function(scope =  NULL,
+    initialize = function(scope = NULL,
                           tenant_id = NULL,
-                          client_id =  NULL,
+                          client_id = NULL,
                           use_cache = "disk",
-                          offline = TRUE
-    ) {
-
-      super$initialize(scope = scope,
-                       tenant_id = tenant_id,
-                       client_id = client_id,
-                       use_cache = use_cache,
-                       offline = offline,
-                       oauth_endpoint = "devicecode")
-    }
-    ,
+                          offline = TRUE) {
+      super$initialize(
+        scope = scope,
+        tenant_id = tenant_id,
+        client_id = client_id,
+        use_cache = use_cache,
+        offline = offline,
+        oauth_endpoint = "devicecode"
+      )
+    },
     #' @description
     #' Get an access token using device code flow
     #'
@@ -75,25 +73,25 @@ DeviceCodeCredential <- R6::R6Class(
     #'
     #' @return An [httr2::oauth_token()] object containing the access token
     get_token = function(reauth = FALSE) {
-
-      httr2::oauth_token_cached(client = self$.oauth_client,
-                                flow = httr2::oauth_flow_device,
-                                cache_disk = self$.use_cache == "disk",
-                                cache_key = self$.cache_key,
-                                flow_params = list(scope = self$.scope_str,
-                                                   auth_url = self$.oauth_url),
-                                reauth = reauth)
-
-    }
-    ,
+      httr2::oauth_token_cached(
+        client = self$.oauth_client,
+        flow = httr2::oauth_flow_device,
+        cache_disk = self$.use_cache == "disk",
+        cache_key = self$.cache_key,
+        flow_params = list(
+          scope = self$.scope_str,
+          auth_url = self$.oauth_url
+        ),
+        reauth = reauth
+      )
+    },
     #' @description
     #' Add OAuth device code authentication to an httr2 request
     #'
     #' @param req An [httr2::request()] object
     #'
     #' @return The request object with OAuth device code authentication configured
-    req_auth = function(req){
-
+    req_auth = function(req) {
       httr2::req_oauth_device(
         req = req,
         client = self$.oauth_client,
@@ -145,8 +143,7 @@ DeviceCodeCredential <- R6::R6Class(
 #' }
 AuthCodeCredential <- R6::R6Class(
   classname = "AuthCodeCredential",
-  inherit = InteractiveCredential,
-  ,
+  inherit = InteractiveCredential, ,
   public = list(
     #' @description
     #' Create a new authorization code credential
@@ -164,23 +161,23 @@ AuthCodeCredential <- R6::R6Class(
     #'   with the application. Defaults to [default_redirect_uri()].
     #'
     #' @return A new `AuthCodeCredential` object
-    initialize = function(scope =  NULL,
+    initialize = function(scope = NULL,
                           tenant_id = NULL,
-                          client_id =  NULL,
+                          client_id = NULL,
                           use_cache = "disk",
                           offline = TRUE,
-                          redirect_uri = default_redirect_uri()
-    ) {
-      super$initialize(scope = scope,
-                       tenant_id = tenant_id,
-                       client_id = client_id,
-                       use_cache = use_cache,
-                       offline = offline,
-                       oauth_endpoint = "authorize")
+                          redirect_uri = default_redirect_uri()) {
+      super$initialize(
+        scope = scope,
+        tenant_id = tenant_id,
+        client_id = client_id,
+        use_cache = use_cache,
+        offline = offline,
+        oauth_endpoint = "authorize"
+      )
 
       self$.redirect_uri <- default_redirect_uri()
-    }
-    ,
+    },
     #' @description
     #' Get an access token using authorization code flow
     #'
@@ -189,26 +186,26 @@ AuthCodeCredential <- R6::R6Class(
     #'
     #' @return An [httr2::oauth_token()] object containing the access token
     get_token = function(reauth = FALSE) {
-
-      httr2::oauth_token_cached(client = self$.oauth_client,
-                                flow = httr2::oauth_flow_auth_code,
-                                cache_disk = self$.use_cache == "disk",
-                                cache_key = self$.cache_key,
-                                flow_params = list(scope = self$.scope_str,
-                                                   auth_url = self$.oauth_url,
-                                                   redirect_uri = self$.redirect_uri),
-                                reauth = reauth)
-
-    }
-    ,
+      httr2::oauth_token_cached(
+        client = self$.oauth_client,
+        flow = httr2::oauth_flow_auth_code,
+        cache_disk = self$.use_cache == "disk",
+        cache_key = self$.cache_key,
+        flow_params = list(
+          scope = self$.scope_str,
+          auth_url = self$.oauth_url,
+          redirect_uri = self$.redirect_uri
+        ),
+        reauth = reauth
+      )
+    },
     #' @description
     #' Add OAuth authorization code authentication to an httr2 request
     #'
     #' @param req An [httr2::request()] object
     #'
     #' @return The request object with OAuth authorization code authentication configured
-    req_auth = function(req){
-
+    req_auth = function(req) {
       httr2::req_oauth_auth_code(
         req = req,
         client = self$.oauth_client,
@@ -239,5 +236,8 @@ InteractiveCredential <- R6::R6Class(
     #' Check if the credential is interactive
     #'
     #' @return Always returns `TRUE` for interactive credentials
-    is_interactive = function(){TRUE}
-  ))
+    is_interactive = function() {
+      TRUE
+    }
+  )
+)

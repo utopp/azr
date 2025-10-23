@@ -16,7 +16,6 @@ Credential <- R6::R6Class(
     .oauth_url = NULL,
     .token_url = NULL,
     .redirect_uri = NULL,
-
     initialize = function(scope = NULL,
                           tenant_id = NULL,
                           client_id = NULL,
@@ -24,7 +23,6 @@ Credential <- R6::R6Class(
                           use_cache = c("disk", "memory"),
                           offline = FALSE,
                           oauth_endpoint = NULL) {
-
       self$.scope <- scope %||% default_azure_scope(resource = "azure_arm")
 
       if (isTRUE(offline)) {
@@ -70,17 +68,14 @@ Credential <- R6::R6Class(
 
       self$validate()
     },
-
     validate = function() {
       validate_scope(self$.scope)
       validate_tenant_id(self$.tenant_id)
       invisible(self)
     },
-
     is_interactive = function() {
       FALSE
     },
-
     print = function() {
       cli::cli_text(cli::style_bold("<", paste(class(self), collapse = "/"), ">"))
 

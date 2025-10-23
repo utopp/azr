@@ -50,11 +50,9 @@ AzureCLICredential <- R6::R6Class(
     initialize = function(scope = NULL,
                           tenant_id = NULL,
                           process_timeout = NULL) {
-
       super$initialize(scope = scope, tenant_id = tenant_id)
       self$.process_timeout <- process_timeout %||% self$.process_timeout
-    }
-    ,
+    },
     #' @description
     #' Get an access token from Azure CLI
     #'
@@ -67,9 +65,8 @@ AzureCLICredential <- R6::R6Class(
         scope = scope %||% self$.scope,
         tenant_id = self$.tenant_id,
         timeout = self$.process_timeout
-      ), error = function(cnd)rlang::abort(cnd$message, call = call("get_token")))
-    }
-    ,
+      ), error = function(cnd) rlang::abort(cnd$message, call = call("get_token")))
+    },
     #' @description
     #' Add authentication to an httr2 request
     #'
@@ -78,7 +75,7 @@ AzureCLICredential <- R6::R6Class(
     #'   uses the scope specified during initialization.
     #'
     #' @return The request object with authentication header added
-    req_auth = function(req, scope = NULL){
+    req_auth = function(req, scope = NULL) {
       token <- self$get_token(scope)
       httr2::req_auth_bearer_token(req, token$access_token)
     }
@@ -87,7 +84,6 @@ AzureCLICredential <- R6::R6Class(
 
 
 .az_cli_run <- function(scope, tenant_id = NULL, timeout = 10L) {
-
   args <- c("account", "get-access-token", "--output", "json")
   az_path <- Sys.which("az")
 
@@ -112,8 +108,9 @@ AzureCLICredential <- R6::R6Class(
   ))
   attr_output <- attributes(output)
 
-  if (!is.null(attr_output) && attr_output$status == 1L)
+  if (!is.null(attr_output) && attr_output$status == 1L) {
     cli::cli_abort(output)
+  }
 
   token <- jsonlite::fromJSON(output)
 

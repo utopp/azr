@@ -207,7 +207,6 @@ default_azure_host <- function() {
 #' \dontrun{
 #' default_redirect_uri()
 #' }
-
 default_redirect_uri <- function(redirect_uri = httr2::oauth_redirect_uri()) {
   parsed <- httr2::url_parse(redirect_uri)
 

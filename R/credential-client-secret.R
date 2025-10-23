@@ -34,8 +34,7 @@ ClientSecretCredential <- R6::R6Class(
     flow = NULL,
     req_auth_fun = NULL,
     str_scope = NULL
-  )
-  ,
+  ),
   public = list(
     #' @description
     #' Validate the credential configuration
@@ -46,26 +45,27 @@ ClientSecretCredential <- R6::R6Class(
     validate = function() {
       super$validate()
 
-      if(is.null(self$.client_secret) || rlang::is_na(self$.client_secret))
+      if (is.null(self$.client_secret) || rlang::is_na(self$.client_secret)) {
         cli::cli_abort("Argument {.arg client_secret} cannot be NULL or NA.")
-    }
-    ,
+      }
+    },
     #' @description
     #' Get an access token using client credentials flow
     #'
     #' @return An [httr2::oauth_token()] object containing the access token
     get_token = function() {
-      httr2::oauth_flow_client_credentials(client = self$.oauth_client,
-                                           scope = self$.scope_str)
-    }
-    ,
+      httr2::oauth_flow_client_credentials(
+        client = self$.oauth_client,
+        scope = self$.scope_str
+      )
+    },
     #' @description
     #' Add OAuth client credentials authentication to an httr2 request
     #'
     #' @param req An [httr2::request()] object
     #'
     #' @return The request object with OAuth client credentials authentication configured
-    req_auth = function(req){
+    req_auth = function(req) {
       httr2::req_oauth_client_credentials(
         req = req,
         client = self$.oauth_client,
