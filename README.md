@@ -7,7 +7,7 @@
 
 ## Overview
 
-azr implements a credential chain for seamless OAuth 2.0 authentication to Azure services. It builds on [httr2](https://httr2.r-lib.org/)'s OAuth framework to provide cache and automatic credential discovery, trying different authentication methods in sequence until one succeeds.
+azr implements a credential chain for seamless OAuth 2.0 authentication to Azure services. It builds on [{httr2}](https://httr2.r-lib.org/)'s OAuth framework to provide cache and automatic credential discovery, trying different authentication methods in sequence until one succeeds.
 
 The package supports:
 
@@ -20,9 +20,14 @@ During interactive development, azr allows browser-based login flows, while in b
 
 ## Related work
 
-azr is inspired by Python's [azure-identity](https://learn.microsoft.com/en-us/python/api/overview/azure/identity-readme) library, which provides a more complete coverage of Azure authentication scenarios and introduced the credential chain pattern for automatic authentication method discovery.
+azr is inspired by Python's [azure-identity](https://learn.microsoft.com/en-us/python/api/overview/azure/identity-readme) library, which provides comprehensive coverage of Azure authentication scenarios and introduced the credential chain pattern for automatic authentication method discovery.
 
-The R package [AzureAuth](https://github.com/Azure/AzureAuth) (based on package 'httr') also provides token acquisition for Azure services, but does not offer an explicit way to define credential chains.
+The R package [AzureAuth](https://github.com/Azure/AzureAuth) (based on httr) also provides token acquisition for Azure services, but does not offer an explicit way to define credential chains. This becomes important in scenarios where different authentication methods require different configurations. For example:
+
+- **Client Secret Credentials**: Using a service principal `client_id` with an application-specific `scope`
+- **Interactive Credentials**: Using user authentication with different credentials
+
+azr addresses this by allowing you to define custom credential chains with method-specific configurations, enabling seamless fallback between authentication approaches.
 
 ## Installation
 
