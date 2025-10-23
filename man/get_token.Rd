@@ -10,7 +10,8 @@ get_token(
   client_id = NULL,
   client_secret = NULL,
   use_cache = "disk",
-  offline = FALSE
+  offline = FALSE,
+  .chain = default_credential_chain()
 )
 }
 \arguments{
@@ -31,9 +32,13 @@ for in-memory caching.}
 
 \item{offline}{Logical. If \code{TRUE}, operates in offline mode. Defaults to
 \code{FALSE}.}
+
+\item{.chain}{A list of credential objects, where each element must inherit
+from the \code{Credential} base class. Credentials are attempted in the order
+provided until \code{get_token} succeeds.}
 }
 \value{
-A character string containing the authentication token.
+A <httr2_token> objects token.
 }
 \description{
 Retrieves an authentication token using the default token provider. This is

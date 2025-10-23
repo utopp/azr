@@ -10,7 +10,8 @@ default_request_authorizer(
   client_id = NULL,
   client_secret = NULL,
   use_cache = "disk",
-  offline = FALSE
+  offline = FALSE,
+  .chain = default_credential_chain()
 )
 }
 \arguments{
@@ -31,6 +32,10 @@ for in-memory caching.}
 
 \item{offline}{Logical. If \code{TRUE}, operates in offline mode. Defaults to
 \code{FALSE}.}
+
+\item{.chain}{A list of credential objects, where each element must inherit
+from the \code{Credential} base class. Credentials are attempted in the order
+provided until \code{get_token} succeeds.}
 }
 \value{
 A function that authorizes HTTP requests with appropriate credentials

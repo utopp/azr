@@ -17,6 +17,9 @@
 #'   for in-memory caching.
 #' @param offline Logical. If `TRUE`, operates in offline mode. Defaults to
 #'   `FALSE`.
+#' @param .chain A list of credential objects, where each element must inherit
+#'   from the `Credential` base class. Credentials are attempted in the order
+#'   provided until `get_token` succeeds.
 #'
 #' @return A function that retrieves and returns an authentication token when
 #'   called.
@@ -40,14 +43,16 @@ default_token_provider <- function(scope =  NULL,
                                    client_id =  NULL,
                                    client_secret = NULL,
                                    use_cache = "disk",
-                                   offline = FALSE){
+                                   offline = FALSE,
+                                   .chain = default_credential_chain()){
 
   crd <- find_credential(scope = scope,
                          tenant_id = tenant_id,
                          client_id = client_id,
                          client_secret = client_secret,
                          use_cache = use_cache,
-                         offline = offline)
+                         offline = offline,
+                         .chain = .chain)
   crd$get_token
 }
 
@@ -70,6 +75,9 @@ default_token_provider <- function(scope =  NULL,
 #'   for in-memory caching.
 #' @param offline Logical. If `TRUE`, operates in offline mode. Defaults to
 #'   `FALSE`.
+#' @param .chain A list of credential objects, where each element must inherit
+#'   from the `Credential` base class. Credentials are attempted in the order
+#'   provided until `get_token` succeeds.
 #'
 #' @return A function that authorizes HTTP requests with appropriate credentials
 #'   when called.
@@ -91,14 +99,16 @@ default_request_authorizer <- function(scope =  NULL,
                                        client_id =  NULL,
                                        client_secret = NULL,
                                        use_cache = "disk",
-                                       offline = FALSE){
+                                       offline = FALSE,
+                                       .chain = default_credential_chain()){
 
   crd <- find_credential(scope = scope,
                          tenant_id = tenant_id,
                          client_id = client_id,
                          client_secret = client_secret,
                          use_cache = use_cache,
-                         offline = offline)
+                         offline = offline,
+                         .chain = .chain)
   crd$req_auth
 }
 
@@ -120,8 +130,11 @@ default_request_authorizer <- function(scope =  NULL,
 #'   for in-memory caching.
 #' @param offline Logical. If `TRUE`, operates in offline mode. Defaults to
 #'   `FALSE`.
+#' @param .chain A list of credential objects, where each element must inherit
+#'   from the `Credential` base class. Credentials are attempted in the order
+#'   provided until `get_token` succeeds.
 #'
-#' @return A character string containing the authentication token.
+#' @return A <httr2_token> objects token.
 #'
 #' @seealso [default_token_provider()], [default_request_authorizer()]
 #'
@@ -141,14 +154,16 @@ get_token <- function(scope =  NULL,
                       client_id =  NULL,
                       client_secret = NULL,
                       use_cache = "disk",
-                      offline = FALSE){
+                      offline = FALSE,
+                      .chain = default_credential_chain()){
 
   provider <- default_token_provider(scope = scope,
                                      tenant_id = tenant_id,
                                      client_id = client_id,
                                      client_secret = client_secret,
                                      use_cache = use_cache,
-                                     offline = offline)
+                                     offline = offline,
+                                     .chain = .chain)
   provider()
 }
 
@@ -161,9 +176,9 @@ find_credential <- function(scope =  NULL,
                             offline = FALSE,
                             oauth_host = NULL,
                             oauth_endpoint = NULL,
-                            chain = default_credential_chain(),
-                            verbose = FALSE){
-  for(crd in chain){
+                            .chain = default_credential_chain(),
+                            .verbose = FALSE){
+  for(crd in .chain){
 
     if(R6::is.R6Class(crd)){
       obj <- try(new_instance(crd, env = rlang::current_env()), silent = TRUE)
@@ -186,7 +201,7 @@ find_credential <- function(scope =  NULL,
 
     token <- tryCatch(obj$get_token(),
                       error = function(e){
-                        if(isTRUE(verbose))
+                        if(isTRUE(.verbose))
                           print(e)
                         else
                           cli::cli_alert_danger("Unsuccessful!")
