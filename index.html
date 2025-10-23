@@ -78,9 +78,10 @@
 <p>During interactive development, azr allows browser-based login flows, while in batch/production mode it seamlessly falls back to non-interactive methods.</p>
 </div>
 <div class="section level2">
-<h2 id="inspiration">Inspiration<a class="anchor" aria-label="anchor" href="#inspiration"></a>
+<h2 id="related-work">Related work<a class="anchor" aria-label="anchor" href="#related-work"></a>
 </h2>
-<p>azr is inspired by Python’s <a href="https://learn.microsoft.com/en-us/python/api/overview/azure/identity-readme" class="external-link">azure-identity</a> library, which provides a more complete coverage of Azure authentication scenarios.</p>
+<p>azr is inspired by Python’s <a href="https://learn.microsoft.com/en-us/python/api/overview/azure/identity-readme" class="external-link">azure-identity</a> library, which provides a more complete coverage of Azure authentication scenarios and introduced the credential chain pattern for automatic authentication method discovery.</p>
+<p>The R package <a href="https://github.com/Azure/AzureAuth" class="external-link">AzureAuth</a> (based on R package ‘httr’) also provides token acquisition for Azure services, but does not offer an explicit way to define credential chains.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
