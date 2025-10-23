@@ -22,7 +22,7 @@ During interactive development, azr allows browser-based login flows, while in b
 
 azr is inspired by Python's [azure-identity](https://learn.microsoft.com/en-us/python/api/overview/azure/identity-readme) library, which provides a more complete coverage of Azure authentication scenarios and introduced the credential chain pattern for automatic authentication method discovery.
 
-The R package [AzureAuth](https://github.com/Azure/AzureAuth) (based on R package 'httr') also provides token acquisition for Azure services, but does not offer an explicit way to define credential chains.
+The R package [AzureAuth](https://github.com/Azure/AzureAuth) (based on package 'httr') also provides token acquisition for Azure services, but does not offer an explicit way to define credential chains.
 
 ## Installation
 
