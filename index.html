@@ -60,7 +60,7 @@
 </h1></div>
 <!-- badges: start -->
 
-<p>azr implements a credential chain for seamless OAuth 2.0 authentication to Azure services. It builds on <a href="https://httr2.r-lib.org/" class="external-link">{httr2}</a>’s OAuth framework to provide cache and automatic credential discovery, trying different authentication methods in sequence until one succeeds.</p>
+<p>azr implements a credential chain for seamless OAuth 2.0 authentication to Azure services. It builds on <a href="https://httr2.r-lib.org/" class="external-link">httr2</a>’s OAuth framework to provide cache and automatic credential discovery, trying different authentication methods in sequence until one succeeds.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -89,7 +89,7 @@
 <h2 id="related-work">Related work<a class="anchor" aria-label="anchor" href="#related-work"></a>
 </h2>
 <p>azr is inspired by Python’s <a href="https://learn.microsoft.com/en-us/python/api/overview/azure/identity-readme" class="external-link">azure-identity</a> library, which provides comprehensive coverage of Azure authentication scenarios and introduced the credential chain pattern for automatic authentication method discovery.</p>
-<p>The R package <a href="https://github.com/Azure/AzureAuth" class="external-link">AzureAuth</a> (based on httr) also provides token acquisition for Azure services, but does not offer an explicit way to define credential chains. This becomes important in scenarios where different authentication methods require different configurations. For example:</p>
+<p>The R package <a href="https://github.com/Azure/AzureAuth" class="external-link">AzureAuth</a> (based on <a href="https://httr.r-lib.org/" class="external-link">httr</a>) also provides token acquisition for Azure services, but does not offer an explicit way to define credential chains. This becomes important in scenarios where different authentication methods require different configurations. For example:</p>
 <ul>
 <li>
 <strong>Client Secret Credentials</strong>: Using a service principal <code>client_id</code> with an application-specific <code>scope</code>
