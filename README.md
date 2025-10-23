@@ -31,7 +31,7 @@ During interactive development, azr allows browser-based login flows, while in b
 
 azr is inspired by Python's [azure-identity](https://learn.microsoft.com/en-us/python/api/overview/azure/identity-readme) library, which provides comprehensive coverage of Azure authentication scenarios and introduced the credential chain pattern for automatic authentication method discovery.
 
-The R package [AzureAuth](https://github.com/Azure/AzureAuth) (based on httr) also provides token acquisition for Azure services, but does not offer an explicit way to define credential chains. This becomes important in scenarios where different authentication methods require different configurations. For example:
+The R package [AzureAuth](https://github.com/Azure/AzureAuth) (based on [{httr}](https://httr.r-lib.org/)) also provides token acquisition for Azure services, but does not offer an explicit way to define credential chains. This becomes important in scenarios where different authentication methods require different configurations. For example:
 
 - **Client Secret Credentials**: Using a service principal `client_id` with an application-specific `scope`
 - **Interactive Credentials**: Using user authentication with different credentials
