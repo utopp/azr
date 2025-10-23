@@ -1,4 +1,3 @@
-
 Credential <- R6::R6Class(
   classname = "Credential",
   public = list(
@@ -16,23 +15,23 @@ Credential <- R6::R6Class(
     .oauth_endpoint = NULL,
     .oauth_url = NULL,
     .token_url = NULL,
-    .redirect_uri = NULL
-    ,
-    initialize = function(scope =  NULL,
+    .redirect_uri = NULL,
+
+    initialize = function(scope = NULL,
                           tenant_id = NULL,
-                          client_id =  NULL,
+                          client_id = NULL,
                           client_secret = NULL,
                           use_cache = c("disk", "memory"),
                           offline = FALSE,
-                          oauth_endpoint = NULL
-    ) {
-      self$.scope <- scope %||% default_azure_scope(resource = "AZURE_ARM")
+                          oauth_endpoint = NULL) {
 
-      if(isTRUE(offline))
-        self$.scope <-  unique(c(self$.scope, "offline_access"))
+      self$.scope <- scope %||% default_azure_scope(resource = "azure_arm")
+
+      if (isTRUE(offline)) {
+        self$.scope <- unique(c(self$.scope, "offline_access"))
+      }
 
       self$.scope_str <- collapse_scope(self$.scope)
-
       self$.resource <- get_scope_resource(self$.scope)
 
       self$.client_id <- client_id %|||% default_azure_client_id()
@@ -45,16 +44,20 @@ Credential <- R6::R6Class(
       self$.id <- rlang::hash(self$.cache_key)
 
       self$.oauth_host <- default_azure_host()
-      self$.token_url <- default_azure_url(endpoint = "token",
-                                           oauth_host = self$.oauth_host,
-                                           tenant_id = self$.tenant_id)
+      self$.token_url <- default_azure_url(
+        endpoint = "token",
+        oauth_host = self$.oauth_host,
+        tenant_id = self$.tenant_id
+      )
 
       self$.oauth_endpoint <- oauth_endpoint %||% self$.oauth_endpoint
 
-      if(!is.null(self$.oauth_endpoint)){
-        self$.oauth_url <- default_azure_url(endpoint = self$.oauth_endpoint,
-                                             oauth_host = self$.oauth_host,
-                                             tenant_id = self$.tenant_id)
+      if (!is.null(self$.oauth_endpoint)) {
+        self$.oauth_url <- default_azure_url(
+          endpoint = self$.oauth_endpoint,
+          oauth_host = self$.oauth_host,
+          tenant_id = self$.tenant_id
+        )
       }
 
       self$.oauth_client <- httr2::oauth_client(
@@ -66,29 +69,36 @@ Credential <- R6::R6Class(
       )
 
       self$validate()
-    }
-    ,
-    validate = function(){
+    },
+
+    validate = function() {
       validate_scope(self$.scope)
       validate_tenant_id(self$.tenant_id)
-      return(invisible(self))
-    }
-    ,
-    is_interactive = function(){FALSE}
-    ,
-    print = function(){
+      invisible(self)
+    },
+
+    is_interactive = function() {
+      FALSE
+    },
+
+    print = function() {
       cli::cli_text(cli::style_bold("<", paste(class(self), collapse = "/"), ">"))
+
       nms <- r6_get_public_fields(cls = r6_get_class(self))
       pfields <- rlang::env_get_list(env = self, nms = nms)
-      names(pfields) <- sub("^\\.","",names(pfields))
-      redacted <- list_redact(Filter(length, pfields), c("client_secret", "key"))
+      names(pfields) <- sub("^\\.", "", names(pfields))
+
+      # Filter out NULL/empty values and redact sensitive fields
+      pfields <- Filter(length, pfields)
+      redacted <- list_redact(pfields, c("client_secret", "key"))
+
       bullets(redacted)
-      return(invisible(self))
+      invisible(self)
     }
   )
 )
 
 
-collapse_scope = function(scope){
+collapse_scope <- function(scope) {
   paste(scope, collapse = " ")
 }

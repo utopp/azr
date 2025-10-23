@@ -38,21 +38,23 @@
 #' }
 #'
 #' @export
-default_token_provider <- function(scope =  NULL,
+default_token_provider <- function(scope = NULL,
                                    tenant_id = NULL,
-                                   client_id =  NULL,
+                                   client_id = NULL,
                                    client_secret = NULL,
                                    use_cache = "disk",
                                    offline = FALSE,
-                                   .chain = default_credential_chain()){
+                                   .chain = default_credential_chain()) {
 
-  crd <- find_credential(scope = scope,
-                         tenant_id = tenant_id,
-                         client_id = client_id,
-                         client_secret = client_secret,
-                         use_cache = use_cache,
-                         offline = offline,
-                         .chain = .chain)
+  crd <- find_credential(
+    scope = scope,
+    tenant_id = tenant_id,
+    client_id = client_id,
+    client_secret = client_secret,
+    use_cache = use_cache,
+    offline = offline,
+    .chain = .chain
+  )
   crd$get_token
 }
 
@@ -90,25 +92,27 @@ default_token_provider <- function(scope =  NULL,
 #'   authorizer <- default_request_authorizer(
 #'     scope = "https://graph.microsoft.com/.default"
 #'   )
-#'   req <- authorizer(httr2::request(https://graph.microsoft.com/v1.0/me))
+#'   req <- authorizer(httr2::request("https://graph.microsoft.com/v1.0/me"))
 #' }
 #'
 #' @export
-default_request_authorizer <- function(scope =  NULL,
+default_request_authorizer <- function(scope = NULL,
                                        tenant_id = NULL,
-                                       client_id =  NULL,
+                                       client_id = NULL,
                                        client_secret = NULL,
                                        use_cache = "disk",
                                        offline = FALSE,
-                                       .chain = default_credential_chain()){
+                                       .chain = default_credential_chain()) {
 
-  crd <- find_credential(scope = scope,
-                         tenant_id = tenant_id,
-                         client_id = client_id,
-                         client_secret = client_secret,
-                         use_cache = use_cache,
-                         offline = offline,
-                         .chain = .chain)
+  crd <- find_credential(
+    scope = scope,
+    tenant_id = tenant_id,
+    client_id = client_id,
+    client_secret = client_secret,
+    use_cache = use_cache,
+    offline = offline,
+    .chain = .chain
+  )
   crd$req_auth
 }
 
@@ -134,7 +138,7 @@ default_request_authorizer <- function(scope =  NULL,
 #'   from the `Credential` base class. Credentials are attempted in the order
 #'   provided until `get_token` succeeds.
 #'
-#' @return A <httr2_token> objects token.
+#' @return An [httr2::oauth_token()] object.
 #'
 #' @seealso [default_token_provider()], [default_request_authorizer()]
 #'
@@ -149,91 +153,97 @@ default_request_authorizer <- function(scope =  NULL,
 #' }
 #'
 #' @export
-get_token <- function(scope =  NULL,
+get_token <- function(scope = NULL,
                       tenant_id = NULL,
-                      client_id =  NULL,
+                      client_id = NULL,
                       client_secret = NULL,
                       use_cache = "disk",
                       offline = FALSE,
-                      .chain = default_credential_chain()){
+                      .chain = default_credential_chain()) {
 
-  provider <- default_token_provider(scope = scope,
-                                     tenant_id = tenant_id,
-                                     client_id = client_id,
-                                     client_secret = client_secret,
-                                     use_cache = use_cache,
-                                     offline = offline,
-                                     .chain = .chain)
+  provider <- default_token_provider(
+    scope = scope,
+    tenant_id = tenant_id,
+    client_id = client_id,
+    client_secret = client_secret,
+    use_cache = use_cache,
+    offline = offline,
+    .chain = .chain
+  )
   provider()
 }
 
 
-find_credential <- function(scope =  NULL,
+find_credential <- function(scope = NULL,
                             tenant_id = NULL,
-                            client_id =  NULL,
+                            client_id = NULL,
                             client_secret = NULL,
                             use_cache = "disk",
                             offline = FALSE,
                             oauth_host = NULL,
                             oauth_endpoint = NULL,
                             .chain = default_credential_chain(),
-                            .verbose = FALSE){
-  for(crd in .chain){
+                            .verbose = FALSE) {
 
-    if(R6::is.R6Class(crd)){
+  for (crd in .chain) {
+
+    if (R6::is.R6Class(crd)) {
       obj <- try(new_instance(crd, env = rlang::current_env()), silent = TRUE)
       cli::cli_alert_info("Trying: {.cls {crd$classname}}")
 
-      if(!inherits(obj, "Credential")){
+      if (inherits(obj, "try-error") || !inherits(obj, "Credential")) {
         cli::cli_alert_danger("Unsuccessful!")
         next
       }
-    }
-    else {
+    } else {
       obj <- crd
       cli::cli_alert_info("Trying: {.cls {class(obj)[[1]]}}")
     }
 
-    if(obj$is_interactive() && !rlang::is_interactive()){
+    if (obj$is_interactive() && !rlang::is_interactive()) {
       cli::cli_alert_warning("Skipping (non-interactive session)")
       next
     }
 
-    token <- tryCatch(obj$get_token(),
-                      error = function(e){
-                        if(isTRUE(.verbose))
-                          print(e)
-                        else
-                          cli::cli_alert_danger("Unsuccessful!")
-                      }
-                      ,
-                      interrupt = function(e) {
-                        cli::cli_alert_danger("Interrupted!")
-                      })
+    token <- tryCatch(
+      obj$get_token(),
+      error = function(e) {
+        if (isTRUE(.verbose)) {
+          print(e)
+        } else {
+          cli::cli_alert_danger("Unsuccessful!")
+        }
+        NULL
+      },
+      interrupt = function(e) {
+        cli::cli_alert_danger("Interrupted!")
+        NULL
+      }
+    )
 
-    if(inherits(token, "httr2_token")){
-      cli::cli_alert_success("Sucessful!")
+    if (inherits(token, "httr2_token")) {
+      cli::cli_alert_success("Successful!")
       return(obj)
     }
   }
-  cli::cli_abort("All authentication methods of the chain failed!")
+
+  cli::cli_abort("All authentication methods in the chain failed!")
 }
 
 
-default_credential_chain <- function(){
-
-  list(client_secret = ClientSecretCredential,
-       azure_cli = AzureCLICredential,
-       auth_code = AuthCodeCredential,
-       device_code = DeviceCodeCredential)
+default_credential_chain <- function() {
+  list(
+    client_secret = ClientSecretCredential,
+    azure_cli = AzureCLICredential,
+    auth_code = AuthCodeCredential,
+    device_code = DeviceCodeCredential
+  )
 }
 
 
-new_instance <- function(cls, env = rlang::caller_env()){
-
+new_instance <- function(cls, env = rlang::caller_env()) {
   cls_args <- r6_get_initialize_arguments(cls)
   cls_values <- rlang::env_get_list(nms = cls_args, default = NULL, env = env)
 
   eval(rlang::call2(cls$new, !!!cls_values))
 }
-
