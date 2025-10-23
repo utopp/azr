@@ -7,7 +7,7 @@
 
 ## Overview
 
-azr implements a credential chain for seamless OAuth 2.0 authentication to Azure services. It builds on [httr2](https://httr2.r-lib.org/)'s OAuth framework to provide automatic credential discovery, trying different authentication methods in sequence until one succeeds.
+azr implements a credential chain for seamless OAuth 2.0 authentication to Azure services. It builds on [httr2](https://httr2.r-lib.org/)'s OAuth framework to provide cache and automatic credential discovery, trying different authentication methods in sequence until one succeeds.
 
 The package supports:
 
@@ -17,6 +17,10 @@ The package supports:
 * **Device Code Flow**: Authentication for headless or CLI environments
 
 During interactive development, azr allows browser-based login flows, while in batch/production mode it seamlessly falls back to non-interactive methods.
+
+## Inspiration
+
+azr is inspired by Python's [azure-identity](https://learn.microsoft.com/en-us/python/api/overview/azure/identity-readme) library, which provides a more complete coverage of Azure authentication scenarios.
 
 ## Installation
 

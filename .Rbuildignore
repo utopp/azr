@@ -4,3 +4,7 @@
 ^\.github$
 ^codecov\.yml$
 ^\..+$
+^tests$
+^docs$
+^cran-comments\.md$
+^CRAN-SUBMISSION$
