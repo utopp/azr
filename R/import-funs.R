@@ -34,7 +34,6 @@ bullets <- function(x) {
   for (i in seq_along(x)) {
     cli::cli_li("{.field {names[[i]]}}: {vals[[i]]}")
   }
-
   invisible(NULL)
 }
 
@@ -45,8 +44,8 @@ list_redact <- function(x, names, case_sensitive = TRUE) {
   } else {
     i <- match(tolower(names), tolower(names(x)))
   }
-
-  i <- i[!is.na(i)]  # Remove non-matching names
+  i <- i[!is.na(i)]
+  i <- setdiff(i, which(is_empty_vec(x)))
   x[i] <- list(redacted())
   x
 }

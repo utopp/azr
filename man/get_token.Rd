@@ -11,7 +11,8 @@ get_token(
   client_secret = NULL,
   use_cache = "disk",
   offline = FALSE,
-  .chain = default_credential_chain()
+  .chain = default_credential_chain(),
+  .verbose = FALSE
 )
 }
 \arguments{
@@ -36,6 +37,9 @@ for in-memory caching.}
 \item{.chain}{A list of credential objects, where each element must inherit
 from the \code{Credential} base class. Credentials are attempted in the order
 provided until \code{get_token} succeeds.}
+
+\item{.verbose}{Logical. If \code{TRUE}, prints detailed diagnostic information
+during credential discovery and authentication. Defaults to \code{FALSE}.}
 }
 \value{
 An \code{\link[httr2:oauth_token]{httr2::oauth_token()}} object.

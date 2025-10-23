@@ -89,3 +89,40 @@ is_empty <- function(x) {
   is.null(x) ||
     (rlang::is_scalar_vector(x) && (rlang::is_empty(x) || is.na(x) || !nzchar(x)))
 }
+
+
+is_empty_vec <- function(x){
+  vapply(x,is_empty,logical(1), USE.NAMES = FALSE)
+}
+
+
+get_env_config <- function(){
+
+  tenant_id_env <- Sys.getenv("AZURE_TENANT_ID", unset = "")
+  client_id_env <- Sys.getenv("AZURE_CLIENT_ID", unset = "")
+  client_secret_env <- Sys.getenv("AZURE_CLIENT_SECRET", unset = "")
+  authority_host_env <- Sys.getenv("AZURE_AUTHORITY_HOST", unset = "")
+
+  # Build bullet items
+  c("*" = if (nzchar(tenant_id_env)) {
+      cli::format_inline("AZURE_TENANT_ID: {.val {tenant_id_env}}")
+    } else {
+      cli::format_inline("AZURE_TENANT_ID: {.val {default_azure_tenant_id()}} (default)")
+    },
+    "*" = if (nzchar(client_id_env)) {
+      cli::format_inline("AZURE_CLIENT_ID: {.val {client_id_env}}")
+    } else {
+      cli::format_inline("AZURE_CLIENT_ID: {.val {default_azure_client_id()}} (default)")
+    },
+    "*" = if (nzchar(client_secret_env)) {
+      paste0("AZURE_CLIENT_SECRET: ", cli::col_grey("<<REDACTED>>"))
+    } else {
+      paste0("AZURE_CLIENT_SECRET: ", cli::col_grey("(not set)"))
+    },
+    "*" = if (nzchar(authority_host_env)) {
+      cli::format_inline("AZURE_AUTHORITY_HOST: {.val {authority_host_env}}")
+    } else {
+      cli::format_inline("AZURE_AUTHORITY_HOST: {.val {default_azure_host()}} (default)")
+    }
+  )
+}

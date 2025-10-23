@@ -20,6 +20,8 @@
 #' @param .chain A list of credential objects, where each element must inherit
 #'   from the `Credential` base class. Credentials are attempted in the order
 #'   provided until `get_token` succeeds.
+#' @param .verbose Logical. If `TRUE`, prints detailed diagnostic information
+#'   during credential discovery and authentication. Defaults to `FALSE`.
 #'
 #' @return A function that retrieves and returns an authentication token when
 #'   called.
@@ -44,7 +46,8 @@ default_token_provider <- function(scope = NULL,
                                    client_secret = NULL,
                                    use_cache = "disk",
                                    offline = FALSE,
-                                   .chain = default_credential_chain()) {
+                                   .chain = default_credential_chain(),
+                                   .verbose = FALSE) {
 
   crd <- find_credential(
     scope = scope,
@@ -53,8 +56,9 @@ default_token_provider <- function(scope = NULL,
     client_secret = client_secret,
     use_cache = use_cache,
     offline = offline,
-    .chain = .chain
-  )
+    .chain = .chain,
+    .verbose = .verbose)
+
   crd$get_token
 }
 
@@ -80,6 +84,8 @@ default_token_provider <- function(scope = NULL,
 #' @param .chain A list of credential objects, where each element must inherit
 #'   from the `Credential` base class. Credentials are attempted in the order
 #'   provided until `get_token` succeeds.
+#' @param .verbose Logical. If `TRUE`, prints detailed diagnostic information
+#'   during credential discovery and authentication. Defaults to `FALSE`.
 #'
 #' @return A function that authorizes HTTP requests with appropriate credentials
 #'   when called.
@@ -102,7 +108,8 @@ default_request_authorizer <- function(scope = NULL,
                                        client_secret = NULL,
                                        use_cache = "disk",
                                        offline = FALSE,
-                                       .chain = default_credential_chain()) {
+                                       .chain = default_credential_chain(),
+                                       .verbose = FALSE) {
 
   crd <- find_credential(
     scope = scope,
@@ -111,8 +118,8 @@ default_request_authorizer <- function(scope = NULL,
     client_secret = client_secret,
     use_cache = use_cache,
     offline = offline,
-    .chain = .chain
-  )
+    .chain = .chain,
+    .verbose = .verbose)
   crd$req_auth
 }
 
@@ -137,6 +144,8 @@ default_request_authorizer <- function(scope = NULL,
 #' @param .chain A list of credential objects, where each element must inherit
 #'   from the `Credential` base class. Credentials are attempted in the order
 #'   provided until `get_token` succeeds.
+#' @param .verbose Logical. If `TRUE`, prints detailed diagnostic information
+#'   during credential discovery and authentication. Defaults to `FALSE`.
 #'
 #' @return An [httr2::oauth_token()] object.
 #'
@@ -159,7 +168,8 @@ get_token <- function(scope = NULL,
                       client_secret = NULL,
                       use_cache = "disk",
                       offline = FALSE,
-                      .chain = default_credential_chain()) {
+                      .chain = default_credential_chain(),
+                      .verbose = FALSE) {
 
   provider <- default_token_provider(
     scope = scope,
@@ -168,8 +178,8 @@ get_token <- function(scope = NULL,
     client_secret = client_secret,
     use_cache = use_cache,
     offline = offline,
-    .chain = .chain
-  )
+    .chain = .chain,
+    .verbose = .verbose)
   provider()
 }
 
@@ -204,6 +214,9 @@ find_credential <- function(scope = NULL,
       cli::cli_alert_warning("Skipping (non-interactive session)")
       next
     }
+
+    if(isTRUE(.verbose))
+      print(obj)
 
     token <- tryCatch(
       obj$get_token(),
