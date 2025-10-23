@@ -5,6 +5,8 @@
 [![R-CMD-check](https://github.com/utopp/azr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/utopp/azr/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
+azr implements a credential chain for seamless OAuth 2.0 authentication to Azure services. It builds on [{httr2}](https://httr2.r-lib.org/)'s OAuth framework to provide cache and automatic credential discovery, trying different authentication methods in sequence until one succeeds.
+
 ## Installation
 
 You can install the development version of azr from [GitHub](https://github.com/) with:
@@ -15,8 +17,6 @@ pak::pak("utopp/azr")
 ```
 
 ## Overview
-
-azr implements a credential chain for seamless OAuth 2.0 authentication to Azure services. It builds on [{httr2}](https://httr2.r-lib.org/)'s OAuth framework to provide cache and automatic credential discovery, trying different authentication methods in sequence until one succeeds.
 
 The package supports:
 
@@ -40,8 +40,6 @@ azr addresses this by allowing you to define custom credential chains with metho
 
 ## Usage
 
-### Quick start with automatic credential discovery
-
 The simplest way to authenticate is using `get_token()`, which automatically tries different authentication methods until one succeeds:
 
 ``` r
@@ -61,84 +59,35 @@ req <- request("https://management.azure.com/subscriptions") |>
 resp <- req_perform(req)
 ```
 
-### Using credential classes directly
-
-You can also instantiate specific credential classes when you know which authentication method you want to use:
-
-#### Azure CLI authentication
-
-If you're already logged in via `az login`, this is the easiest option:
+Alternatively, use `get_request_authorizer()` to get a function that adds authentication to requests:
 
 ``` r
-# Create an Azure CLI credential
-cred <- AzureCLICredential$new(
+library(azr)
+library(httr2)
+
+# Get a request authorizer for Microsoft Graph API
+azr_req_auth <- get_request_authorizer(
   tenant_id = "your-tenant-id",
-  scope = "https://management.azure.com/.default"
-)
-
-# Get a token
-token <- cred$get_token()
-
-# Or use directly with httr2 requests
-req <- request("https://management.azure.com/subscriptions") |>
-  cred$req_auth()
-
-resp <- req_perform(req)
-```
-
-#### Client secret authentication
-
-For service principal authentication in production:
-
-``` r
-# Create a client secret credential
-cred <- ClientSecretCredential$new(
-  tenant_id = "your-tenant-id",
-  client_id = "your-client-id",
-  client_secret = "your-client-secret",
-  scope = "https://management.azure.com/.default"
-)
-
-# Use with httr2
-req <- request("https://management.azure.com/subscriptions") |>
-  cred$req_auth()
-
-resp <- req_perform(req)
-```
-
-#### Interactive authentication
-
-For user authentication during development:
-
-``` r
-# Device code flow (shows a code to enter in browser)
-cred <- DeviceCodeCredential$new(
-  tenant_id = "your-tenant-id",
-  client_id = "your-client-id",
   scope = "https://graph.microsoft.com/.default"
 )
 
-token <- cred$get_token()
-
-# Authorization code flow (opens browser automatically)
-cred <- AuthCodeCredential$new(
-  tenant_id = "your-tenant-id",
-  client_id = "your-client-id",
-  scope = "https://graph.microsoft.com/.default"
-)
-
-token <- cred$get_token()
+# Use it to authenticate requests
+resp <- request("https://graph.microsoft.com/v1.0/me") |>
+  azr_req_auth() |>
+  req_perform()
 ```
-
-### Customizing the credential chain
 
 You can customize which authentication methods are tried and in what order:
 
 ``` r
-# Define a custom credential chain
+# Define a custom credential chain with specific credential instances
 custom_chain <- list(
-  AzureCLICredential,
-  ClientSecretCredential
+  ClientSecretCredential$new(
+    scope = Sys.getenv("APP_SCOPE"),
+    client_id = Sys.getenv("APP_CLIENT_ID"),
+    client_secret = Sys.getenv("APP_CLIENT_SECRET")
+  ),
+  AzureCLICredential
 )
 
 # Use the custom chain
@@ -148,13 +97,6 @@ token <- get_token(
   .chain = custom_chain
 )
 ```
-
-## Common Azure scopes
-
-- Azure Resource Manager: `https://management.azure.com/.default`
-- Microsoft Graph: `https://graph.microsoft.com/.default`
-- Azure Storage: `https://storage.azure.com/.default`
-- Azure Key Vault: `https://vault.azure.net/.default`
 
 ## Code of Conduct
 
