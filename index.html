@@ -60,21 +60,158 @@
 </h1></div>
 <!-- badges: start -->
 
-<p>The goal of azr is to …</p>
+<div class="section level2">
+<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
+</h2>
+<p>azr implements a credential chain for seamless OAuth 2.0 authentication to Azure services. It builds on <a href="https://httr2.r-lib.org/" class="external-link">httr2</a>’s OAuth framework to provide automatic credential discovery, trying different authentication methods in sequence until one succeeds.</p>
+<p>The package supports:</p>
+<ul>
+<li>
+<strong>Client Secret Credential</strong>: Service principal authentication with client ID and secret</li>
+<li>
+<strong>Azure CLI Credential</strong>: Leverages existing Azure CLI (<code>az</code>) login</li>
+<li>
+<strong>Authorization Code Flow</strong>: Interactive browser-based authentication</li>
+<li>
+<strong>Device Code Flow</strong>: Authentication for headless or CLI environments</li>
+</ul>
+<p>During interactive development, azr allows browser-based login flows, while in batch/production mode it seamlessly falls back to non-interactive methods.</p>
+</div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>You can install the development version of azr like so:</p>
+<p>You can install the development version of azr from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># FILL THIS IN! HOW CAN PEOPLE INSTALL YOUR DEV PACKAGE?</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"utopp/azr"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+<h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h2>
-<p>This is a basic example which shows you how to solve a common problem:</p>
+<div class="section level3">
+<h3 id="quick-start-with-automatic-credential-discovery">Quick start with automatic credential discovery<a class="anchor" aria-label="anchor" href="#quick-start-with-automatic-credential-discovery"></a>
+</h3>
+<p>The simplest way to authenticate is using <code><a href="reference/get_token.html">get_token()</a></code>, which automatically tries different authentication methods until one succeeds:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">azr</span><span class="op">)</span></span>
-<span><span class="co">## basic example code</span></span></code></pre></div>
+<span></span>
+<span><span class="co"># Get a token using the default credential chain</span></span>
+<span><span class="va">token</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_token.html">get_token</a></span><span class="op">(</span></span>
+<span>  tenant_id <span class="op">=</span> <span class="st">"your-tenant-id"</span>,</span>
+<span>  scope <span class="op">=</span> <span class="st">"https://management.azure.com/.default"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Use the token with httr2</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://httr2.r-lib.org" class="external-link">httr2</a></span><span class="op">)</span></span>
+<span><span class="va">req</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://httr2.r-lib.org/reference/request.html" class="external-link">request</a></span><span class="op">(</span><span class="st">"https://management.azure.com/subscriptions"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://httr2.r-lib.org/reference/req_auth_bearer_token.html" class="external-link">req_auth_bearer_token</a></span><span class="op">(</span><span class="va">token</span><span class="op">$</span><span class="va">access_token</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://httr2.r-lib.org/reference/req_perform.html" class="external-link">req_perform</a></span><span class="op">(</span><span class="va">req</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="using-credential-classes-directly">Using credential classes directly<a class="anchor" aria-label="anchor" href="#using-credential-classes-directly"></a>
+</h3>
+<p>You can also instantiate specific credential classes when you know which authentication method you want to use:</p>
+<div class="section level4">
+<h4 id="azure-cli-authentication">Azure CLI authentication<a class="anchor" aria-label="anchor" href="#azure-cli-authentication"></a>
+</h4>
+<p>If you’re already logged in via <code>az login</code>, this is the easiest option:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Create an Azure CLI credential</span></span>
+<span><span class="va">cred</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/AzureCLICredential.html">AzureCLICredential</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
+<span>  tenant_id <span class="op">=</span> <span class="st">"your-tenant-id"</span>,</span>
+<span>  scope <span class="op">=</span> <span class="st">"https://management.azure.com/.default"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Get a token</span></span>
+<span><span class="va">token</span> <span class="op">&lt;-</span> <span class="va">cred</span><span class="op">$</span><span class="fu">get_token</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Or use directly with httr2 requests</span></span>
+<span><span class="va">req</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://httr2.r-lib.org/reference/request.html" class="external-link">request</a></span><span class="op">(</span><span class="st">"https://management.azure.com/subscriptions"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="va">cred</span><span class="op">$</span><span class="fu">req_auth</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://httr2.r-lib.org/reference/req_perform.html" class="external-link">req_perform</a></span><span class="op">(</span><span class="va">req</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="client-secret-authentication">Client secret authentication<a class="anchor" aria-label="anchor" href="#client-secret-authentication"></a>
+</h4>
+<p>For service principal authentication in production:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Create a client secret credential</span></span>
+<span><span class="va">cred</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/ClientSecretCredential.html">ClientSecretCredential</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
+<span>  tenant_id <span class="op">=</span> <span class="st">"your-tenant-id"</span>,</span>
+<span>  client_id <span class="op">=</span> <span class="st">"your-client-id"</span>,</span>
+<span>  client_secret <span class="op">=</span> <span class="st">"your-client-secret"</span>,</span>
+<span>  scope <span class="op">=</span> <span class="st">"https://management.azure.com/.default"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Use with httr2</span></span>
+<span><span class="va">req</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://httr2.r-lib.org/reference/request.html" class="external-link">request</a></span><span class="op">(</span><span class="st">"https://management.azure.com/subscriptions"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="va">cred</span><span class="op">$</span><span class="fu">req_auth</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://httr2.r-lib.org/reference/req_perform.html" class="external-link">req_perform</a></span><span class="op">(</span><span class="va">req</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="interactive-authentication">Interactive authentication<a class="anchor" aria-label="anchor" href="#interactive-authentication"></a>
+</h4>
+<p>For user authentication during development:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Device code flow (shows a code to enter in browser)</span></span>
+<span><span class="va">cred</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/DeviceCodeCredential.html">DeviceCodeCredential</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
+<span>  tenant_id <span class="op">=</span> <span class="st">"your-tenant-id"</span>,</span>
+<span>  client_id <span class="op">=</span> <span class="st">"your-client-id"</span>,</span>
+<span>  scope <span class="op">=</span> <span class="st">"https://graph.microsoft.com/.default"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">token</span> <span class="op">&lt;-</span> <span class="va">cred</span><span class="op">$</span><span class="fu">get_token</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Authorization code flow (opens browser automatically)</span></span>
+<span><span class="va">cred</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/AuthCodeCredential.html">AuthCodeCredential</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
+<span>  tenant_id <span class="op">=</span> <span class="st">"your-tenant-id"</span>,</span>
+<span>  client_id <span class="op">=</span> <span class="st">"your-client-id"</span>,</span>
+<span>  scope <span class="op">=</span> <span class="st">"https://graph.microsoft.com/.default"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">token</span> <span class="op">&lt;-</span> <span class="va">cred</span><span class="op">$</span><span class="fu">get_token</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level3">
+<h3 id="customizing-the-credential-chain">Customizing the credential chain<a class="anchor" aria-label="anchor" href="#customizing-the-credential-chain"></a>
+</h3>
+<p>You can customize which authentication methods are tried and in what order:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Define a custom credential chain</span></span>
+<span><span class="va">custom_chain</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  <span class="va">AzureCLICredential</span>,</span>
+<span>  <span class="va">ClientSecretCredential</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Use the custom chain</span></span>
+<span><span class="va">token</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_token.html">get_token</a></span><span class="op">(</span></span>
+<span>  tenant_id <span class="op">=</span> <span class="st">"your-tenant-id"</span>,</span>
+<span>  scope <span class="op">=</span> <span class="st">"https://management.azure.com/.default"</span>,</span>
+<span>  .chain <span class="op">=</span> <span class="va">custom_chain</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="common-azure-scopes">Common Azure scopes<a class="anchor" aria-label="anchor" href="#common-azure-scopes"></a>
+</h2>
+<ul>
+<li>Azure Resource Manager: <code>https://management.azure.com/.default</code>
+</li>
+<li>Microsoft Graph: <code>https://graph.microsoft.com/.default</code>
+</li>
+<li>Azure Storage: <code>https://storage.azure.com/.default</code>
+</li>
+<li>Azure Key Vault: <code>https://vault.azure.net/.default</code>
+</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="code-of-conduct">Code of Conduct<a class="anchor" aria-label="anchor" href="#code-of-conduct"></a>
+</h2>
+<p>Please note that the azr project is released with a <a href="https://contributor-covenant.org/version/2/1/CODE_OF_CONDUCT.html" class="external-link">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
 </div>
 </div>
   </div>
@@ -107,7 +244,6 @@
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
 <li><a href="https://github.com/utopp/azr/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/utopp/azr/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
-<li><a href="https://app.codecov.io/gh/utopp/azr" class="external-link"><img src="https://codecov.io/gh/utopp/azr/graph/badge.svg" alt="Codecov test coverage"></a></li>
 </ul>
 </div>
 
