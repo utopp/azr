@@ -74,6 +74,8 @@ Credential <- R6::R6Class(
       return(invisible(self))
     }
     ,
+    is_interactive = function(){FALSE}
+    ,
     print = function(){
       cli::cli_text(cli::style_bold("<", paste(class(self), collapse = "/"), ">"))
       nms <- r6_get_public_fields(cls = r6_get_class(self))

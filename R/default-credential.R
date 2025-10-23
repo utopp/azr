@@ -163,22 +163,22 @@ find_credential <- function(scope =  NULL,
                             oauth_endpoint = NULL,
                             chain = default_credential_chain(),
                             verbose = FALSE){
-  for(cls in chain){
+  for(crd in chain){
 
-    if(isTRUE(cls$is_interactive) && !rlang::is_interactive()){
-      cli::cli_alert_warning("Skipping {.cls {cls$classname}} (non-interactive session)")
+    if(R6::is.R6Class(crd))
+      obj <- try(new_instance(crd, env = rlang::current_env()), silent = TRUE)
+    else
+      obj <- crd
+
+    if(obj$is_interactive() && !rlang::is_interactive()){
+      cli::cli_alert_warning("Skipping {.cls {class(obj)[[1]]}} (non-interactive session)")
       next
     } else {
-      cli::cli_alert_info("Trying: {.cls {cls$classname}}")
+      cli::cli_alert_info("Trying: {.cls {class(obj)[[1]]}}")
     }
 
-    cls_args <- r6_get_initialize_arguments(cls)
-    cls_values <- rlang::env_get_list(nms = cls_args, default = NULL)
-
-    crd <- try(eval(rlang::call2(cls$new, !!!cls_values)), silent = TRUE)
-
-    if(inherits(crd, "Credential")){
-      token <- tryCatch(crd$get_token(),
+    if(inherits(obj, "Credential")){
+      token <- tryCatch(obj$get_token(),
                         error = function(e){
                           if(isTRUE(verbose))
                             print(e)
@@ -192,7 +192,7 @@ find_credential <- function(scope =  NULL,
 
       if(inherits(token, "httr2_token")){
         cli::cli_alert_success("Sucessful!")
-        return(crd)
+        return(obj)
       }
     }
   }
@@ -201,10 +201,19 @@ find_credential <- function(scope =  NULL,
 
 
 default_credential_chain <- function(){
-  list(ClientSecretCredential,
-       AzureCLICredential,
-       AuthCodeCredential,
-       DeviceCodeCredential)
+
+  list(client_secret = ClientSecretCredential,
+       azure_cli = AzureCLICredential,
+       auth_code = AuthCodeCredential,
+       device_code = DeviceCodeCredential)
 }
 
+
+new_instance <- function(cls, env = rlang::caller_env()){
+
+  cls_args <- r6_get_initialize_arguments(cls)
+  cls_values <- rlang::env_get_list(nms = cls_args, default = NULL, env = env)
+
+  eval(rlang::call2(cls$new, !!!cls_values))
+  }
 

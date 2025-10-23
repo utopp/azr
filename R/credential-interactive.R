@@ -1,7 +1,7 @@
 # DeviceCodeCredential ----
 DeviceCodeCredential <- R6::R6Class(
   classname = "DeviceCodeCredential",
-  inherit = Credential,
+  inherit = InteractiveCredential,
   ,
   public = list(
     initialize = function(scope =  NULL,
@@ -49,7 +49,7 @@ DeviceCodeCredential <- R6::R6Class(
 # AuthCodeCredential ----
 AuthCodeCredential <- R6::R6Class(
   classname = "AuthCodeCredential",
-  inherit = Credential,
+  inherit = InteractiveCredential,
   ,
   public = list(
     initialize = function(scope =  NULL,
@@ -97,6 +97,10 @@ AuthCodeCredential <- R6::R6Class(
   )
 )
 
-DeviceCodeCredential$is_interactive <- TRUE
 
-AuthCodeCredential$is_interactive <- TRUE
+InteractiveCredential <- R6::R6Class(
+  classname = "InteractiveCredential",
+  inherit = Credential,
+  public = list(
+    is_interactive = function(){TRUE}
+  ))
