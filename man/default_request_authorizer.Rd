@@ -52,7 +52,7 @@ from the discovered credential object.
   authorizer <- default_request_authorizer(
     scope = "https://graph.microsoft.com/.default"
   )
-  req <- authorizer(httr2::request(https://graph.microsoft.com/v1.0/me))
+  req <- authorizer(httr2::request("https://graph.microsoft.com/v1.0/me"))
 }
 
 }

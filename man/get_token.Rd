@@ -38,7 +38,7 @@ from the \code{Credential} base class. Credentials are attempted in the order
 provided until \code{get_token} succeeds.}
 }
 \value{
-A <httr2_token> objects token.
+An \code{\link[httr2:oauth_token]{httr2::oauth_token()}} object.
 }
 \description{
 Retrieves an authentication token using the default token provider. This is
