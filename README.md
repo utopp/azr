@@ -5,6 +5,15 @@
 [![R-CMD-check](https://github.com/utopp/azr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/utopp/azr/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
+## Installation
+
+You can install the development version of azr from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("pak")
+pak::pak("utopp/azr")
+```
+
 ## Overview
 
 azr implements a credential chain for seamless OAuth 2.0 authentication to Azure services. It builds on [{httr2}](https://httr2.r-lib.org/)'s OAuth framework to provide cache and automatic credential discovery, trying different authentication methods in sequence until one succeeds.
@@ -28,15 +37,6 @@ The R package [AzureAuth](https://github.com/Azure/AzureAuth) (based on httr) al
 - **Interactive Credentials**: Using user authentication with different credentials
 
 azr addresses this by allowing you to define custom credential chains with method-specific configurations, enabling seamless fallback between authentication approaches.
-
-## Installation
-
-You can install the development version of azr from [GitHub](https://github.com/) with:
-
-``` r
-# install.packages("pak")
-pak::pak("utopp/azr")
-```
 
 ## Usage
 
