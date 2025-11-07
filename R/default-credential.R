@@ -207,7 +207,13 @@ find_credential <- function(scope = NULL,
     .chain <- default_credential_chain()
   }
 
+  if(!inherits(.chain,"credential_chain"))
+    cli::cli_abort("Argument {.arg .chain} must be of class {.cls credential_chain}.")
+
   for (crd in .chain) {
+
+    crd <- try(rlang::eval_tidy(crd), silent = TRUE)
+
     if (R6::is.R6Class(crd)) {
       obj <- try(new_instance(crd, env = rlang::current_env()), silent = TRUE)
       cli::cli_alert_info("Trying: {.cls {crd$classname}}")
@@ -217,7 +223,7 @@ find_credential <- function(scope = NULL,
         next
       }
     } else {
-      if (R6::is.R6(crd) && inherits(obj, "Credential")) {
+      if (R6::is.R6(crd) && inherits(crd, "Credential")) {
         obj <- crd
         cli::cli_alert_info("Trying: {.cls {class(obj)[[1]]}}")
       } else {
@@ -264,7 +270,7 @@ find_credential <- function(scope = NULL,
 
 
 default_credential_chain <- function() {
-  list(
+  credential_chain(
     client_secret = ClientSecretCredential,
     azure_cli = AzureCLICredential,
     auth_code = AuthCodeCredential,

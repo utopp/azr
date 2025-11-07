@@ -33,22 +33,17 @@
 ClientSecretCredential <- R6::R6Class(
   classname = "ClientSecretCredential",
   inherit = Credential,
-  private = list(
-    flow = NULL,
-    req_auth_fun = NULL,
-    str_scope = NULL
-  ),
   public = list(
     #' @description
     #' Validate the credential configuration
     #'
     #' @details
-    #' Checks that the client secret is provided and not NA. Calls the parent
+    #' Checks that the client secret is provided and not NA or NULL. Calls the parent
     #' class validation method.
     validate = function() {
       super$validate()
 
-      if (is.null(self$.client_secret) || rlang::is_na(self$.client_secret)) {
+      if (is.null(self$.client_secret) || rlang::is_na(self$.client_secret))  {
         cli::cli_abort("Argument {.arg client_secret} cannot be NULL or NA.")
       }
     },
@@ -72,7 +67,7 @@ ClientSecretCredential <- R6::R6Class(
       httr2::req_oauth_client_credentials(
         req = req,
         client = self$.oauth_client,
-        scope = self$.str_scope
+        scope = self$.scope_str
       )
     }
   )
